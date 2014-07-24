@@ -1,0 +1,294 @@
+<%-- 
+<%-- 
+Name: $ModuleName$.proj.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="XML" src="../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="HasSettingControl" Type="System.Boolean" Optional="True" Default="True" Category="01.1) Module Controls" Description="Will include the Settings.ascx files." %>
+<%@ Property Name="AdditionalControls" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="Semi-Colon seperated list of the Names {no whitespace} of the controls. eg - Edit;AddNew;AdminEdit" %>
+<%-- 01.2) Module Permissions --%>
+<%@ Property Name="HasDnnExtendPermissions" Type="System.Boolean" Optional="True" Default="False" Category="01.2) Module Permissions" Description="DNN Profession+ and Oliver Hine's Extended Persmission have these active." %>
+<%@ Property Name="AdditionalPermissions" Type="System.String" Optional="True" Category="01.2) Module Permissions" Description="Semi-Colon seperated list of the Names {no whitespace} of the Permissions. eg - AddNew;AdminEdit" %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="DotNetNukeDirectory" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="DotNetNuke website directory to host module testing. This will also be the DNN.DLL Referenced by the project." Editor="System.Windows.Forms.Design.FolderNameEditor" %>
+<%-- 02.0) DotNetNuke WebAPI --%>
+<%@ Property Name="UseDnnWebApi" Type="System.Boolean" Optional="True" Default="False" Category="02.0) DotNetNuke WebAPI" Description="Include files for the DNN WebAPI" %>
+<%@ Property Name="WebApiControllerNames" Type="System.String" Optional="True" Category="02.0) DotNetNuke" Description="Semi-Colon seperated list of controller names to generate files for. Do Not include 'Controller' suffix." %>
+<%-- 02.2) DotNetNuke Manifest --%>
+<%@ Property Name="ManifestIncludeReleaseNotesFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestIncludeLicenseFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+
+<%-- 04) Localization --%>
+<%@ Property Name="CulturesToInclude" Type="System.String" Optional="True" Category="04) Localization" Description="Semi-Colon seperated list of Cultures to generate files for. Can be either ZZ or zz-zz. If kept the same and cultures added, it will add the new files and keep all existing ones." %>
+
+<%-- 05) ASP.NET --%>
+<%@ Property Name="netVersion" Type="MasterCodeBehind.dotNet.Version" Optional="False" Category="05) ASP.NET" Description="Version of .NET to set the module to." %>
+
+<%-- 06) Additional DLLs --%>
+<%@ Property Name="AdditionalDllsIncludedInZip" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will be included in the zip file." %>
+<%@ Property Name="AdditionalDllsNotZipped" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will NOT be included in the zip file." %>
+
+<%-- 07) JavaScript & CSS --%>
+<%@ Property Name="AdditionalJavascriptFiles" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Additional JS files to be uploaded with the module" %>
+<%@ Property Name="AdditionalCssFiles" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Additional CSS files to be uploaded with the module" %>
+
+<%-- 08) Data Access Layer --%>
+<%@ Property Name="DataAccessLayerProvider" Type="MasterCodeBehind.DataAccessLayer.Types" Optional="True" Default="None" Category="08) Data Access Layer" Description="Type of Data Access Layer to include in the template." %>
+<%-- 08.netTiers) Data Access Layer --%>
+<%@ Property Name="netTiersLocation" Type="System.String" Optional="True" Category="08.netTiers) Data Access Layer" Editor="System.Windows.Forms.Design.FolderNameEditor" Description="Location of the root folder for the netTiers solution. The root folder needs to be the same name as the root namespace of the netTiers project." %>
+
+<%-- 09) Logging --%>
+<%@ Property Name="LoggingProvider" Type="MasterCodeBehind.Logging.Types" Optional="True" Default="None" Category="08) Logging" Description="Type of Logging to include in the template." %>
+
+<%-- 11) Remote Bug Submission --%>
+<%@ Property Name="RemoteBugSubProvider" Type="MasterCodeBehind.RemoteBugSub.Types" Optional="True" Default="None" Category="11) Remote Bug Submission" Description="Type of Remote Bug Submission to include in the template." %>
+
+<%-- 12) Source Control --%>
+<%@ Property Name="SourceControl" Type="MasterCodeBehind.SourceControl.Types" Optional="True" Default="None" Category="12) Source Control" Description="Type of Source Control to include in the template." %>
+<%-- 12.Hg) Source Control --%>
+<%@ Property Name="HgPlugin" Type="MasterCodeBehind.SourceControl.HgPluginTypes" Optional="True" Default="None" Category="12.Hg) Source Control" Description="Visual Studio Source Control plugin to include in the template." %>
+
+<%--Begin File Generation Code --%>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+<%--    <ProjectGuid>{7390DE36-A5E7-4D42-B2B3-A8E4F56C9745}</ProjectGuid>   --%>
+    <ProjectTypeGuids><%--{349c5851-65df-11da-9384-00065b846f21};--%>{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace><%= RootNamespace %>.<%= CodeSafeModuleName %></RootNamespace>
+    <AssemblyName><%= RootNamespace %>.<%= CodeSafeModuleName %></AssemblyName>
+    <TargetFrameworkVersion><%= MasterCodeBehind.dotNet.ToString(netVersion) %></TargetFrameworkVersion>
+    <%= MasterCodeBehind.SourceControl.ProjectFile_Plugin(SourceControl, HgPlugin) %>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'PreRelease|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\PreRelease</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetNuke, Version=<% if(System.IO.File.Exists(DotNetNukeDirectory + @"\bin\DotNetNuke.dll")) { %><%= System.Diagnostics.FileVersionInfo.GetVersionInfo(DotNetNukeDirectory + @"\bin\DotNetNuke.dll").FileVersion %><% } else { %>0.0.0.0<% } %>, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath><%= DotNetNukeDirectory %>\bin\DotNetNuke.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DotNetNuke.Web">
+      <HintPath><%= DotNetNukeDirectory %>\bin\DotNetNuke.Web.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Telerik.Web.UI, Version=<% if(System.IO.File.Exists(DotNetNukeDirectory + @"\bin\Telerik.Web.UI.dll")) { %><%= System.Diagnostics.FileVersionInfo.GetVersionInfo(DotNetNukeDirectory + @"\bin\Telerik.Web.UI.dll").FileVersion %><% } else { %>0.0.0.0<% } %>, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath><%= DotNetNukeDirectory %>\bin\Telerik.Web.UI.dll</HintPath>
+    </Reference>
+<%-- Removing MVC
+    <Reference Include="WebFormsMvp, Version=0.9.7.2, Culture=neutral, PublicKeyToken=537f18701145dff0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath><%= DotNetNukeDirectory %>\bin\WebFormsMvp.dll</HintPath>
+    </Reference>
+--%>
+<%-- 09) Logging --%>
+    <%= MasterCodeBehind.Logging.ProjectReference(LoggingProvider, netVersion) %>
+<%-- 11) Remote Bug Submission --%>
+    <%= MasterCodeBehind.RemoteBugSub.ProjectReference(RemoteBugSubProvider, netVersion) %>
+<%-- 08) Data Access Layer --%>
+<%     
+    string dalLocation = String.Empty;
+    switch(DataAccessLayerProvider)
+    {
+        case MasterCodeBehind.DataAccessLayer.Types.netTiers:
+            dalLocation = netTiersLocation;
+        break;
+        default:
+            //Do Nothing
+            break;
+    }
+    if(!String.IsNullOrEmpty(dalLocation)){ %>
+    <%= MasterCodeBehind.DataAccessLayer.ProjectReference(DataAccessLayerProvider, netVersion, dalLocation) %> <% } %>
+    <!-- Additional DLLs Not Zipped-->
+<% if(!String.IsNullOrEmpty(AdditionalDllsNotZipped)) { foreach(string s in AdditionalDllsNotZipped.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Reference Include="<%= System.IO.Path.GetFileNameWithoutExtension(s) %>">
+      <HintPath><% if(System.IO.File.Exists(s)) { %><%= s %><% } else { %><%= DotNetNukeDirectory + @"\bin\" + s %><% } %></HintPath>
+      <Private>False</Private>
+    </Reference>
+<% } } %>
+    <!-- Additional DLLs Zipped-->
+<% if(!String.IsNullOrEmpty(AdditionalDllsIncludedInZip)) { foreach(string s in AdditionalDllsIncludedInZip.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Reference Include="<%= System.IO.Path.GetFileNameWithoutExtension(s) %>">
+      <HintPath><% if(System.IO.File.Exists(s)) { %><%= s %><% } else { %><%= DotNetNukeDirectory + @"\bin\" + s %><% } %></HintPath>
+      <Private>False</Private>
+    </Reference>
+<% } } %>
+  </ItemGroup>
+<% foreach(string s in (AdditionalControls + ";" + MasterCodeBehind.ViewControl).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+  <ItemGroup>
+    <!-- <%= s %> Files -->
+<%-- Removing MVC
+    <Compile Include="Presenters\<%= s %>Presenter.cs" />
+--%>
+    <Content Include="Views\<%= s %>.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Compile Include="Views\<%= s %>.ascx.cs">
+      <DependentUpon><%= s %>.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\<%= s %>.ascx.designer.cs">
+      <DependentUpon><%= s %>.ascx</DependentUpon>
+    </Compile>
+<%-- Removing MVC
+    <Compile Include="Views\Interfaces\I<%= s %>View.cs" />
+    <Compile Include="Views\Models\<%= s %>Model.cs" />
+--%>
+    <EmbeddedResource Include="App_LocalResources\<%= s %>.ascx.resx" />
+    <% if(!String.IsNullOrEmpty(CulturesToInclude)) { foreach(string c in CulturesToInclude.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <EmbeddedResource Include="App_LocalResources\<%= s %>.ascx.<%= c %>.resx" />
+    <% } } %>
+    <Content Include="js\<%= s %>.js" />
+<% if(!String.IsNullOrEmpty(AdditionalPermissions)) {  foreach(string p in (AdditionalPermissions + MasterCodeBehind.DefaultPermissions + (HasDnnExtendPermissions ? MasterCodeBehind.ExtendedPermissions : String.Empty)).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Content Include="js\<%= s %>Permission<%= p %>.js" />
+<% } } %>
+  </ItemGroup>
+<% } %>
+<% if(HasSettingControl) { %>
+  <ItemGroup><!-- Settings Files -->
+    <Content Include="Settings.ascx" />
+    <Compile Include="Settings.ascx.cs">
+      <DependentUpon>Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings.ascx.designer.cs">
+      <DependentUpon>Settings.ascx</DependentUpon>
+    </Compile>
+    <Content Include="App_LocalResources\Settings.ascx.resx" />
+    <% if(!String.IsNullOrEmpty(CulturesToInclude)) { foreach(string c in CulturesToInclude.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Content Include="App_LocalResources\Settings.ascx.<%= c %>.resx" />
+    <% } } %>
+    <Content Include="js\Settings.js" />
+  </ItemGroup>
+<% } %>
+  <ItemGroup>
+    <Compile Include="Components\Common.cs" />
+    <Compile Include="Components\Generated.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="js\Framework.js" />
+    <Content Include="js\Localized.js" />
+    <Content Include="js\dnnWebApiAjax.js" />
+    <% if(!String.IsNullOrEmpty(CulturesToInclude)) { foreach(string c in CulturesToInclude.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Content Include="js\Localized.<%= c %>.js" />
+    <% } } %>
+    <Content Include="js\<%= CodeSafeModuleName %>.js" />
+    <!-- Additional JS Files -->
+    <% if(!String.IsNullOrEmpty(AdditionalJavascriptFiles)) { foreach(string s in AdditionalJavascriptFiles.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Content Include="js\<%= System.IO.Path.GetFileName(s) %>" />
+    <% } } %>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\<%= CodeSafeModuleName %>.css" />
+    <!-- Additional CSS Files -->
+    <% if(!String.IsNullOrEmpty(AdditionalCssFiles)) { foreach(string s in AdditionalCssFiles.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Content Include="css\<%= System.IO.Path.GetFileName(s) %>" />
+    <% } } %>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BuildFiles\<%= CodeSafeModuleName %>Build.targets">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Version.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="<%= CodeSafeModuleName %>.dnn" />
+  </ItemGroup>
+  <% if(ManifestIncludeLicenseFile || ManifestIncludeReleaseNotesFile) { %>
+  <ItemGroup>
+    <% if(ManifestIncludeLicenseFile) { %><Content Include="license.txt" /><% } %>
+    <% if(ManifestIncludeReleaseNotesFile) { %><Content Include="releaseNotes.txt" /><% } %>
+  </ItemGroup>
+  <% } %>
+<%-- SQL
+  <ItemGroup>
+    <Content Include="sql\00.00.00.SqlDataProvider" />
+    <None Include="sql\Uninstall.SqlDataProvider" />
+  </ItemGroup>
+--%>
+<%-- Removing MVC
+  <ItemGroup>
+    <Folder Include="Views\Controls\" />
+  </ItemGroup>
+--%>
+<%-- DnnWebApi Files --%>
+  <% if(UseDnnWebApi) { %>
+  <ItemGroup>
+    <Compile Include="WebApi\RouteMapper.cs" />
+    <% if(UseDnnWebApi && String.IsNullOrEmpty(WebApiControllerNames)){ %>
+    <Compile Include="WebApi\Controllers\<%= CodeSafeModuleName %>Controller.cs" />
+    <% } %>
+    <% if(!String.IsNullOrEmpty(WebApiControllerNames)) { foreach(string s in WebApiControllerNames.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+    <Compile Include="WebApi\Controllers\<%= s %>Controller.cs" />
+    <% } } %>
+  </ItemGroup>
+  <% } %>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Import Project="$(MSBuildProjectDirectory)\Buildfiles\<%= CodeSafeModuleName %>Build.targets" Condition="Exists('$(MSBuildProjectDirectory)\BuildFiles\<%= CodeSafeModuleName %>Build.targets')" />
+</Project>

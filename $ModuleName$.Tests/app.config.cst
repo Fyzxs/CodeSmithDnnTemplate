@@ -1,0 +1,32 @@
+<%-- 
+Name: app.config.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="XML" src="../MasterCodeBehind.cs" %>
+
+<%--Begin File Generation Code --%>
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<appSettings>
+		<!--Test Specific Settings-->
+		<add key="TestVersion" value="05.04.02" />
+		<add key="VersionType" value="Community" />
+		<!--Browser Settings-->
+		<add key="SilentMode" value="False" />
+		<add key="IETimeOut" value="180" />
+		<add key="AutoCloseIE" value="False" />
+		<!--Database Settings-->
+		<add key="DatabaseName" value="DotNetNuke" />
+		<add key="DatabaseServer" value=".\SQLExpress" />
+		<!--Videos & Screen Capture Settings-->
+		<add key="VideoEnabled" value="False" />
+		<add key="ScreenCaptureEnabled" value="False" />
+		<add key="VideoZoom" value="0.25" />
+		<add key="VideoFramesPerSec" value="5" />
+		<add key="CaptionFontSize" value="26" />
+		<!--Test File Locations-->
+		<add key="TestRoot" value="DotNetNuke_Community" />
+		<add key="WebsitePath" value="C:\inetpub\wwwroot\" />
+		<add key="DatabasePath" value="C:\Databases" />
+	</appSettings>
+</configuration>

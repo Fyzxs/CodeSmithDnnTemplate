@@ -1,0 +1,21 @@
+<%-- 
+Name: $AdditionalControl$Presenter.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControl" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="The control that this is being generated for." %>
+
+<%--Begin File Generation Code --%>
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Model
+{
+    public class <%= AdditionalControl %>Model
+    {
+        public string SomeKindaMessage { get; set; }
+    }
+}

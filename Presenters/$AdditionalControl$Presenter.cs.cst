@@ -1,0 +1,46 @@
+<%-- 
+Name: $AdditionalControl$Presenter.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControl" Type="System.String" Optional="False" Category="01.1) Module Controls" Description="The control that this is being generated for." %>
+
+<%--Begin File Generation Code --%>
+using System;
+using System.Web;
+using DotNetNuke.Common;
+using DotNetNuke.Web.Mvp;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Model;
+
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Presenter
+{
+    public class <%= AdditionalControl %>Presenter : ModulePresenter<I<%= AdditionalControl %>View, <%= AdditionalControl %>Model>
+    {
+        public <%= AdditionalControl %>Presenter(I<%= AdditionalControl %>View view) : base(view)
+        {
+            View.<%= AdditionalControl %>EventName += View_<%= AdditionalControl %>EventName;
+            <% if(AdditionalControl != MasterCodeBehind.ViewControl) { %>View.GoBack += View_GoBack;<% } %>
+        }
+        public override void ReleaseView()
+        {
+            View.<%= AdditionalControl %>EventName -= View_<%= AdditionalControl %>EventName;
+            <% if(AdditionalControl != MasterCodeBehind.ViewControl) { %>View.GoBack -= View_GoBack;<% } %>
+        }
+
+        void View_<%= AdditionalControl %>EventName(object sender, <%= AdditionalControl %>EventNameEventArgs e)
+        {
+            View.Model.SomeKindaMessage = e.SomeKindaMessage;
+        }
+
+        <% if(AdditionalControl != MasterCodeBehind.ViewControl) { %>void View_GoBack(object sender, EventArgs e)
+        {
+            ((HttpResponse)sender).Redirect(Globals.NavigateURL(TabId));
+        }<% } %>
+    }
+}

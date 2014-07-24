@@ -1,0 +1,14 @@
+Add QUnit to Debug Condition
+Add QUnit Script Registgration(S)
+Add QUnit JS Test file
+
+
+Change Generic.RegisterJS to the ScriptManager
+
+
+modify build process to copy over files from JS folder in unit test
+
+Default Namespace = Assembly name
+change <MODULE>Controller to just Controller
+Module Definition??
+FilegroupDLL not have thing

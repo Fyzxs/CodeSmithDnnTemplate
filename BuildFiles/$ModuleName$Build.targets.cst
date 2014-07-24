@@ -1,0 +1,270 @@
+<%-- 
+Name: $ModuleName$Build.targets.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="XML" src="../MasterCodeBehind.cs"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="ModuleName" Type="System.String" Optional="False" Category="01) Module" Description="The Name of the Module" %>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="HasSettingControl" Type="System.Boolean" Optional="True" Default="True" Category="01.1) Module Controls" Description="Will include the Settings.ascx files." %>
+
+<%-- 01.2) Module Permissions --%>
+<%@ Property Name="HasDnnExtendPermissions" Type="System.Boolean" Optional="True" Default="False" Category="01.2) Module Permissions" Description="DNN Profession+ and Oliver Hine's Extended Persmission have these active." %>
+<%@ Property Name="AdditionalPermissions" Type="System.String" Optional="True" Category="01.2) Module Permissions" Description="Semi-Colon seperated list of the Names {no whitespace} of the Permissions. eg - AddNew;AdminEdit" %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="DotNetNukeDirectory" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="DotNetNuke website directory to host module testing. This will also be the DNN.DLL Referenced by the project." Editor="System.Windows.Forms.Design.FolderNameEditor" %>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder." %>
+
+<%-- 02.2) DotNetNuke Manifest --%>
+<%@ Property Name="ManifestIncludeReleaseNotesFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestIncludeLicenseFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+
+<%-- 03) AssemblyInfo.cs --%>
+<%@ Property Name="AssemblyInfoTitle" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoDescription" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoCompany" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoProduct" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoTrademark" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoCopyright" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+
+<%-- 06) Additional DLLs --%>
+<%@ Property Name="AdditionalDllsIncludedInZip" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will be included in the zip file." %>
+
+<%-- 12) Source Control --%>
+<%@ Property Name="SourceControl" Type="MasterCodeBehind.SourceControl.Types" Optional="True" Default="None" Category="12) Source Control" Description="Type of Source Control to include in the template." %>
+
+
+<%--Begin File Generation Code --%>
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- DotNetNuke Local Site -->
+	<PropertyGroup>
+		<CompanyFolder><%= OwnerFolder %></CompanyFolder>
+		<ModuleFolder><%= CodeSafeModuleName %></ModuleFolder>
+		<WebsitePath><%= DotNetNukeDirectory %></WebsitePath>
+		<WebsiteBin><%= DotNetNukeDirectory %>\bin</WebsiteBin>
+	</PropertyGroup>
+
+	<!--Include MSBuild Community Tasks.-->
+	<Choose>
+		<When Condition="Exists('$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets')">
+			<PropertyGroup>
+				<MSBuildCommunityTasksAvailable>true</MSBuildCommunityTasksAvailable>
+			</PropertyGroup>
+		</When>
+		<Otherwise>
+			<PropertyGroup>
+				<MSBuildCommunityTasksAvailable>false</MSBuildCommunityTasksAvailable>
+			</PropertyGroup>
+		</Otherwise>
+	</Choose>
+
+	<Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"
+			Condition=" '$(MSBuildCommunityTasksAvailable)' == 'true' "/>
+
+	<%= MasterCodeBehind.SourceControl.BuildFile_Include(SourceControl) %>
+
+	<!--Start BeforeBuild-->
+	<Target Name="BeforeBuild">
+		<CallTarget Targets="GetVersionInfo"></CallTarget>
+		<CallTarget Targets="GenerateAssemblyInfo"></CallTarget>
+<%-- 13) SQL Comparrison 
+		<CallTarget Targets="GenerateUpgradeSqlScript"></CallTarget>
+		<CallTarget Targets="GenerateUnInstallSqlScript"></CallTarget>
+--%>
+		<CallTarget Targets="UpdateManifestScriptSection"></CallTarget>
+	</Target>
+	
+	<!-- Generated the Version Property Pieces -->
+	<Target Name="GetVersionInfo" 
+			Condition="'$(MSBuildCommunityTasksAvailable)' == 'true'">
+		<!-- Obtain Version information from Version.txt -->
+		<Version VersionFile="Version.txt" BuildType="Increment" RevisionType="Reset" Condition="'$(ConfigurationName)'=='Release'">
+			<Output TaskParameter="Major" PropertyName="Major" />
+			<Output TaskParameter="Minor" PropertyName="Minor" />
+			<Output TaskParameter="Build" PropertyName="Build" />
+			<Output TaskParameter="Revision" PropertyName="Revision" />
+		</Version>
+		<Version VersionFile="Version.txt" RevisionType="BuildIncrement" Condition="'$(ConfigurationName)' == 'Debug' OR '$(ConfigurationName)' == 'PreRelease'">
+			<Output TaskParameter="Major" PropertyName="Major" />
+			<Output TaskParameter="Minor" PropertyName="Minor" />
+			<Output TaskParameter="Build" PropertyName="Build" />
+			<Output TaskParameter="Revision" PropertyName="Revision" />
+		</Version>
+		<!-- DNN requires single digits to be prefixed with a zero. -->
+		<CreateProperty Value="0$(Major)" Condition="$(Major) &lt;= 9" >
+			<Output TaskParameter="Value" PropertyName="Major" />
+		</CreateProperty>
+		<CreateProperty Value="0$(Minor)" Condition="$(Minor) &lt;= 9" >
+			<Output TaskParameter="Value" PropertyName="Minor" />
+		</CreateProperty>
+		<CreateProperty Value="0$(Build)" Condition="$(Build) &lt;= 9" >
+			<Output TaskParameter="Value" PropertyName="Build" />
+		</CreateProperty>
+		<CreateProperty Value="0$(Revision)" Condition="$(Revision) &lt;= 9" >
+			<Output TaskParameter="Value" PropertyName="Revision" />
+		</CreateProperty>
+		<PropertyGroup>
+			<ModuleVersion>$(Major).$(Minor).$(Build).$(Revision)</ModuleVersion>
+			<ModuleVersionNoRevision>$(Major).$(Minor).$(Build)</ModuleVersionNoRevision>
+		</PropertyGroup>
+	</Target>
+
+	<!-- Generate the AssemblyInfo.cs File -->
+	<Target Name="GenerateAssemblyInfo"
+	 Condition="'$(MSBuildCommunityTasksAvailable)' == 'true'"
+	 DependsOnTargets="GetVersionInfo">
+		<AssemblyInfo CodeLanguage="CS"
+				OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs"
+				AssemblyTitle="<%= AssemblyInfoTitle %>"
+				AssemblyDescription="<%= AssemblyInfoDescription %>"
+				AssemblyCompany="<%= AssemblyInfoCompany %>"
+				AssemblyProduct="<%= AssemblyInfoProduct %>"
+				AssemblyTrademark="<%= AssemblyInfoTrademark %>"
+				AssemblyCopyright="<%= AssemblyInfoCopyright %>"
+				AssemblyVersion="$(ModuleVersionNoRevision)"
+				AssemblyFileVersion="$(ModuleVersion)" />
+	</Target>
+
+
+<%-- 13) SQL Comparrison 
+	<!-- SQL Script Comment
+		This assume you have a development database and a database that has the previous changes.
+		It will use compare the devDB to the prvDB and create a script from that.
+		
+		It is CRITICAL that the databases be IDENTICAL in every fashion except changes for the module.	
+	-->
+	<!-- Generate the SQL Upgrade Script -->
+	<Target Name="GenerateUpgradeSqlScript">
+		<Exec Command="echo 'This is where command line args go to generate a new script for the current version'" />
+	</Target>
+	
+	<!-- Generate the SQL UnInstall Script -->
+	<Target Name="GenerateUnInstallSqlScript">
+		<Exec Command="echo 'Same as above, but swap the DB locations'" />
+	</Target>
+--%>
+
+	<!-- Update the DNN Manifest Script Section to Include the new Script outputs -->
+	<Target Name="UpdateManifestScriptSection"
+	 Condition="'$(MSBuildCommunityTasksAvailable)' == 'true'">
+		<XmlUpdate
+                XPath="dotnetnuke/packages/package/@version"
+                XmlFileName="<%= CodeSafeModuleName %>.dnn"
+                Value="$(ModuleVersion)"/>
+	</Target>
+	
+	<!--End BeforeBuild-->
+
+	<!--Start AfterBuild-->
+	<Target Name="AfterBuild">
+        <%= MasterCodeBehind.SourceControl.BuildFile_CallTarget(SourceControl) %>
+		<CallTarget Targets="CreateFileGroups"></CallTarget>
+		<CallTarget Targets="CreateZip"></CallTarget>
+		<CallTarget Targets="CopyFilesToSite"></CallTarget>
+		<CallTarget Targets="CopyForReference" Condition=" '$(Configuration)' == 'Release'"></CallTarget>
+	</Target>
+    
+    <%= MasterCodeBehind.SourceControl.BuildFile_Targets(SourceControl)  %>
+    
+	<!-- Call File Groups -->
+	<Target Name="CreateFileGroups">
+		<CallTarget Targets="CreateFileGroupDLL"></CallTarget>
+		<CallTarget Targets="CreateFileGroupPDB"></CallTarget>
+		<CallTarget Targets="CreateFileGroupASCX"></CallTarget>
+		<CallTarget Targets="CreateFileGroupRESX"></CallTarget>
+		<CallTarget Targets="CreateFileGroupJS"></CallTarget>
+		<CallTarget Targets="CreateFileGroupCSS"></CallTarget>
+		<CallTarget Targets="CreateFileGroupSQL"></CallTarget>
+		<CallTarget Targets="CreateFileGroupOther"></CallTarget>
+	</Target>
+
+	<!-- Select DLL -->
+	<Target Name="CreateFileGroupDLL">
+		<CreateItem Include="<% if(!String.IsNullOrEmpty(AdditionalDllsIncludedInZip)) { foreach(string s in AdditionalDllsIncludedInZip.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %><% if(System.IO.File.Exists(s)) { %><%= s %>;<% } else { %>$(WebsiteBin)\<%= s %>;<% } %>;$(TargetPath)<% } } %>">
+			<Output TaskParameter="Include" ItemName="FileGroupDLL"/>
+		</CreateItem>
+	</Target>
+	<!-- Select PDB -->
+	<Target Name="CreateFileGroupPDB">
+		<CreateItem Include="$(MSBuildProjectDirectory)\$(OutputPath)\$(TargetName).pdb">
+			<Output TaskParameter="Include" ItemName="FileGroupPDB" />
+		</CreateItem>
+	</Target>
+	<!-- Select ASCX -->
+	<Target Name="CreateFileGroupASCX">
+		<CreateItem Include="$(MSBuildProjectDirectory)\*.ascx;$(MSBuildProjectDirectory)\Views\*.ascx;">
+        <!-- Removing MVC $(MSBuildProjectDirectory)\Views\Controls\*.ascx"> -->
+			<Output TaskParameter="Include" ItemName="FileGroupASCX" />
+		</CreateItem>
+	</Target>
+	<!-- Select RESX -->
+	<Target Name="CreateFileGroupRESX">
+		<CreateItem Include="$(MSBuildProjectDirectory)\App_LocalResources\*.resx">
+			<Output TaskParameter="Include" ItemName="FileGroupRESX" />
+		</CreateItem>
+	</Target>
+	<!-- Select JS -->
+	<Target Name="CreateFileGroupJS">
+		<CreateItem Include="$(MSBuildProjectDirectory)\js\*.js">
+			<Output TaskParameter="Include" ItemName="FileGroupJS" />
+		</CreateItem>
+	</Target>
+	<!-- Select CSS -->
+	<Target Name="CreateFileGroupCSS">
+		<CreateItem Include="$(MSBuildProjectDirectory)\css\*.css">
+		    <Output TaskParameter="Include" ItemName="FileGroupCSS" />
+		</CreateItem>
+	</Target>
+	<!-- Select SQL -->
+	<Target Name="CreateFileGroupSQL">
+        <CreateItem Include="$(MSBuildProjectDirectory)\sql\*.sql">
+	        <Output TaskParameter="Include" ItemName="FileGroupSQL" />
+		</CreateItem>
+	</Target>
+	<!-- Select Other Files -->
+	<Target Name="CreateFileGroupOther">
+        <CreateItem Include="$(ProjectDir)\<%= CodeSafeModuleName %>.dnn<% if(ManifestIncludeLicenseFile) { %>;$(ProjectDir)\License.txt<% } if(ManifestIncludeReleaseNotesFile) { %>;$(ProjectDir)\ReleaseNotes.txt<% } %>">
+	        <Output TaskParameter="Include" ItemName="FileGroupOther" />
+		</CreateItem>
+	</Target>
+	
+	
+	<!-- Add Files to Verion Zip File -->
+	<Target Name="CreateZip" Condition="'$(MSBuildCommunityTasksAvailable)' == 'true'">
+		<Zip Files="@(FileGroupDLL);@(FileGroupASCX);@(FileGroupRESX);@(FileGroupJS);@(FileGroupCSS);@(FileGroupSQL);@(FileGroupOther)" Flatten="True" ZipFileName="$(ProjectName)_$(Configuration)_$(Major).$(Minor).$(Build)_Install.zip" />
+	</Target>
+
+	<!-- Copy Files to Locations  -->
+	<Target Name="CopyFilesToSite">
+		<!-- Copy DLL -->
+		<Copy SourceFiles="@(FileGroupDLL)" DestinationFolder="$(WebsitePath)\bin" />
+		<!-- Copy PDB -->
+		<Copy SourceFiles="@(FileGroupPDB)" DestinationFolder="$(WebsitePath)\bin" Condition="'$(ConfigurationName)' == 'Debug'" />
+		<!-- Copy ASCX -->
+		<Copy SourceFiles="@(FileGroupASCX)" DestinationFolder="$(WebsitePath)\DesktopModules\$(CompanyFolder)\$(ModuleFolder)" />
+		<!-- Copy RESX -->
+		<Copy SourceFiles="@(FileGroupRESX)" DestinationFolder="$(WebsitePath)\DesktopModules\$(CompanyFolder)\$(ModuleFolder)\App_LocalResources" />
+		<!-- Copy JS -->
+		<Copy SourceFiles="@(FileGroupJS)" DestinationFolder="$(WebsitePath)\DesktopModules\$(CompanyFolder)\$(ModuleFolder)\js" />
+		<!-- Copy CSS -->
+		<Copy SourceFiles="@(FileGroupcss)" DestinationFolder="$(WebsitePath)\DesktopModules\$(CompanyFolder)\$(ModuleFolder)\css" />
+		<!-- Copy SQL -->
+		<Copy SourceFiles="@(FileGroupSQL)" DestinationFolder="$(WebsitePath)\DesktopModules\$(CompanyFolder)\$(ModuleFolder)\sql" />
+		<!-- Copy Other -->
+		<Copy SourceFiles="@(FileGroupOther)" DestinationFolder="$(WebsitePath)\DesktopModules\$(CompanyFolder)\$(ModuleFolder)" />
+	</Target>
+
+	<!-- Store a copy of Release Builds -->
+	<Target Name="CopyForReference" Condition="'$(ConfigurationName)' == 'Release'">
+		<Copy SourceFiles="$(ProjectName)_$(Configuration)_$(Major).$(Minor).$(Build)_Install.zip" DestinationFolder="$(ProjectDir)\bin\$(Major).$(Minor).$(Build)"></Copy>
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)\bin\$(Major).$(Minor).$(Build)"></Copy>
+	</Target>
+	
+	<!-- End AfterBuild Section	-->
+</Project>

@@ -1,0 +1,160 @@
+<%-- 
+Name: WebTestBase.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="ModuleName" Type="System.String" Optional="False" Category="01) Module" Description="The Name of the Module" %>
+
+<%--Begin File Generation Code --%>
+/*
+' DotNetNuke? - http://www.dotnetnuke.com
+' Copyright (c) 2002-2009
+' by DotNetNuke Corporation
+'
+' Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+' documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
+' the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and 
+' to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+'
+' The above copyright notice and this permission notice shall be included in all copies or substantial portions 
+' of the Software.
+'
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED 
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+' DEALINGS IN THE SOFTWARE.
+*/
+/* Modified DotNetNule_WatiN_Tests.UI.WatiN.HostTests.HTBase.cs */
+using System;
+using System.Configuration;
+using System.Web.Configuration;
+using System.IO;
+using DotNetNuke.Tests.UI.WatiN.Common;
+using DotNetNuke.Tests.UI.WatiN.Utilities;
+using WatiN.Core;
+
+namespace <%= ModuleName %>.Tests
+{
+    public class WebTestBase : TestBase
+    {
+        protected WatiNBase baseWatinObject;
+        protected IE ieInstance;
+
+        protected virtual string ApplicationName
+        {
+            get
+            {
+                return "ModuleTemplate";
+            }
+        }
+
+        protected string DatabaseName
+        {
+            get { return TestEnvironment.DatabaseName; }
+        }
+
+        protected string DatabaseServer
+        {
+            get { return TestEnvironment.DatabaseServer; }
+        }
+
+        protected string DatabasePath
+        {
+            get
+            {
+                return TestEnvironment.DatabasePath;
+            }
+        }
+
+        protected string PhysicalPath
+        {
+            get
+            {
+                return Path.Combine(TestEnvironment.WebsitePath, ApplicationName);
+            }
+        }
+
+        protected override string SiteURL
+        {
+            get
+            {
+                return String.Format("http://localhost/{0}", ApplicationName);
+            }
+        }
+
+        #region Private Helper Methods
+
+        protected void SetConnectionString(string applicationPath, string databaseName, string userName, string password)
+        {
+            string connString = String.Format("Server={0};Database={1};uid={2};pwd={3};",
+                                                                TestEnvironment.DatabaseServer,
+                                                                databaseName,
+                                                                userName,
+                                                                password);
+
+            Configuration configuration = WebConfigurationManager.OpenWebConfiguration("/" + applicationPath);
+
+            //Setup Connection String
+            ConnectionStringsSection connectionStringsSection = configuration.GetSection("connectionStrings") as ConnectionStringsSection;
+            ConnectionStringSettingsCollection connectionStrings = connectionStringsSection.ConnectionStrings;
+            ConnectionStringSettings connectionString = connectionStrings["SiteSqlServer"];
+            connectionString.ConnectionString = connString;
+
+            AppSettingsSection appSettingsSection = configuration.GetSection("appSettings") as AppSettingsSection;
+            appSettingsSection.Settings["SiteSqlServer"].Value = connString;
+
+            configuration.Save();
+        }
+
+        protected void SetUpTest()
+        {
+            //Setup the Website             
+            SetUpWebSite(PhysicalPath, TestUsers.DBUser.UserName, TestUsers.DBUser.Password);
+
+            System.Threading.Thread.Sleep(1000);
+            //Attach the Database
+            DatabaseManager.DropDatabase(DatabaseName);
+            System.Threading.Thread.Sleep(1000);
+            DatabaseManager.CopyAndAttachDatabase(TestContext, DatabasePath, DatabaseName);
+            System.Threading.Thread.Sleep(1000);
+            //Ensure the correct user is the Databases owner.
+            DatabaseManager.SetDatabaseOwner(DatabaseName, TestUsers.DBUser.UserName);
+
+            // Open a new Internet Explorer window and navigate to the website
+            ieInstance = WatiNUtil.OpenIEInstance(SiteURL, SilentMode, IETimeOut, AutoCloseIE);
+            baseWatinObject = new WatiNBase(ieInstance, SiteURL);
+
+        }
+        
+        protected void SetUpWebSite(string physicalPath, string userName, string password)
+        {
+            //These were causing errors on my machine. So I took them out. Tests still run.
+            //IISManager.RecycleApplicationPool(ApplicationName);
+            //IISManager.CreateIISApplication(ApplicationName, physicalPath, "ASP.NET v4.0");
+
+            //Set web.config connection settings
+            SetConnectionString(ApplicationName, DatabaseName, userName, password);
+        }
+
+        protected void TearDownTest()
+        {
+            //Make sure user is logged out
+            ieInstance.GoTo(SiteURL + "/LogOff.aspx");
+
+            //Shut down Ie
+            WatiNUtil.CloseIEInstance(ieInstance);
+
+            //Recycle IIS App Pool
+            IISManager.RecycleApplicationPool(ApplicationName);
+
+            //Drop Database
+            DatabaseManager.DropDatabase(DatabaseName);
+        }
+
+        #endregion
+
+    }
+}

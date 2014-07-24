@@ -1,0 +1,821 @@
+<%-- 
+Name:
+Author: 
+Description: 
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="MasterCodeBehind.cs" Inherits="" Debug="True" CompilerVersion="v3.5" Description="Generates a DotNetNuke module framework." %>
+
+<%-- 01) Module --%>
+<%@ Property Name="ModuleName" Type="System.String" Optional="False" Category="01) Module" Description="The Name of the Module" %>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+<%@ Property Name="ModuleFolderLocation" Type="System.String" Optional="False" Category="01) Module" Description="Location to put the Module solution" Editor="System.Windows.Forms.Design.FolderNameEditor" %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="HasSettingControl" Type="System.Boolean" Optional="True" Default="True" Category="01.1) Module Controls" Description="Will include the Settings.ascx files." %>
+<%@ Property Name="AdditionalControls" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="Semi-Colon seperated list of the Names {no whitespace} of the controls. eg - Edit;AddNew;AdminEdit" %>
+<%-- 01.2) Module Permissions --%>
+<%@ Property Name="HasDnnExtendPermissions" Type="System.Boolean" Optional="True" Default="False" Category="01.2) Module Permissions" Description="DNN Profession+ and Oliver Hine's Extended Persmission have these active." %>
+<%@ Property Name="AdditionalPermissions" Type="System.String" Optional="True" Category="01.2) Module Permissions" Description="Semi-Colon seperated list of the Names {no whitespace} of the Permissions. eg - AddNew;AdminEdit" %>
+<%-- 01.3) Module Interfaces --%>
+<%@ Property Name="IUpgradeable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implements of IUpgradeable." %>
+<%@ Property Name="IPortable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implementats of IPortable." %>
+<%@ Property Name="ISearchable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implementats of ISearchable." %>
+<%@ Property Name="IActionable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the View control implementats of IActionable." %>
+<%@ Property Name="IModuleListener" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the View control implementats of IModuleListener." %>
+<%@ Property Name="IModuleCommunicator" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the View control implementats of IModuleCommunicator." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="DotNetNukeDirectory" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="DotNetNuke website directory to host module testing. This will also be the DNN.DLL Referenced by the project." Editor="System.Windows.Forms.Design.FolderNameEditor" %>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. eg - DesktopModule\{OwnerFolder}\CodeSafeModuleName" %>
+
+<%-- 02.0) DotNetNuke WebAPI --%>
+<%@ Property Name="UseDnnWebApi" Type="System.Boolean" Optional="True" Default="False" Category="02.0) DotNetNuke WebAPI" Order="0"  Description="Include files for the DNN WebAPI" %>
+<%@ Property Name="WebApiControllerNames" Type="System.String" Optional="True" Category="02.0) DotNetNuke WebAPI" Description="Semi-Colon seperated list of controller names to generate files for. Do Not include 'Controller' suffix." %>
+
+<%-- 02.1) DotNetNuke/Telerik --%>
+<%@ Property Name="HaveTelerikDeveloperLicense" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Uses Telerik controls where possible. UseDnnTelerikControls will override this and place DNN Wrapped controls when possible." %>
+<%@ Property Name="UseDnnTelerikControls" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Where possible, will use the DNN wrappers for Telerik Controls" %>
+<%-- TelerikDllLocation : Out because the best option is to use the DNN default so upgrades go smoother --%>
+
+<%-- 02.2) DotNetNuke Manifest --%>
+<%@ Property Name="ManifestPackageName" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestFriendlyName" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestDescription" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerName" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerOrganization" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerUrl" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerEmail" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestIncludeReleaseNotesFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestIncludeLicenseFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestUpgradeVersionList" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+
+<%-- 03) AssemblyInfo.cs --%>
+<%@ Property Name="AssemblyInfoTitle" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoDescription" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoCompany" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoProduct" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoTrademark" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoCopyright" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+
+<%-- 04) Localization --%>
+<%@ Property Name="CulturesToInclude" Type="System.String" Optional="True" Category="04) Localization" Description="Semi-Colon seperated list of Cultures to generate files for. Can be either ZZ or zz-zz. If kept the same and cultures added, it will add the new files and keep all existing ones." %>
+<%-- Include Header/Footer Localization swapper--%>
+
+<%-- 05) ASP.NET --%>
+<%@ Property Name="netVersion" Type="MasterCodeBehind.dotNet.Version" Optional="False" Category="05) ASP.NET" Description="Version of .NET to set the module to." %>
+
+<%-- 06) Additional DLLs --%>
+<%@ Property Name="AdditionalDllsIncludedInZip" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will be included in the zip file." %>
+<%@ Property Name="AdditionalDllsNotZipped" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will NOT be included in the zip file." %>
+
+<%-- 07) JavaScript & CSS --%>
+<%@ Property Name="AdditionalJavascriptFiles" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Additional JS files to be uploaded with the module" %>
+<%@ Property Name="IncludeTemplateAjaxWrapper" Type="System.Boolean" Optional="True" Default="False" Category="07) JavaScript and CSS" Description="Adds some code designed to handle customized jQuery AJAX requests." %>
+<%@ Property Name="AdditionalCssFiles" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Additional CSS files to be uploaded with the module" %>
+<%-- Will enable later when module is more developed
+<%@ Property Name="MakeJsEmbedded" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Will cause the JS files to be embedded and treated as a webresource." %>
+<%@ Property Name="MakeCssEmbedded" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Will cause the CSS files to be embedded and treated as a webresource." %>
+--%>
+
+<%-- 08) Data Access Layer --%>
+<%@ Property Name="DataAccessLayerProvider" Type="MasterCodeBehind.DataAccessLayer.Types" Optional="True" Default="None" Category="08) Data Access Layer" Description="Type of Data Access Layer to include in the template." %>
+<%-- 08.netTiers) Data Access Layer --%>
+<%@ Property Name="netTiersLocation" Type="System.String" Optional="True" Category="08.netTiers) Data Access Layer" Editor="System.Windows.Forms.Design.FolderNameEditor" Description="Location of the root folder for the netTiers solution. The root folder needs to be the same name as the root namespace of the netTiers project." %>
+
+<%-- 09) Logging --%>
+<%@ Property Name="LoggingProvider" Type="MasterCodeBehind.Logging.Types" Optional="True" Default="None" Category="09) Logging" Description="Type of Logging to include in the template." %>
+<%-- 09.log4net) Logging --%>
+<%@ Property Name="log4netVersion" Type="MasterCodeBehind.Logging.log4netVersion" Optional="True" Category="09.log4net) Logging" Description="Version of log4net to include in the template." %>
+
+<%-- 10) Unit Testing --%>
+<%@ Property Name="IncludeUnitTesting" Type="System.Boolean" Optional="True" Default="False" Category="10) Unit Testing" Description="Include Unit Testing with the module." %>
+
+<%-- 11) Remote Bug Submission --%>
+<%@ Property Name="RemoteBugSubProvider" Type="MasterCodeBehind.RemoteBugSub.Types" Optional="True" Default="None" Category="11) Remote Bug Submission" Description="Type of Remote Bug Submission to include in the template." %>
+<%-- 11.FogBugz) Remote Bug Submission --%>
+<%@ Property Name="fogBugzVersion" Type="MasterCodeBehind.RemoteBugSub.FogBugzVersion" Optional="True" Category="11.FogBugz) Remote Bug Submission" Description="Version of BugzScout." %>
+<%@ Property Name="fogBugzUrl" Type="System.String" Optional="True" Default="https:\\CompanyName.fogbugz.com/ScoutSubmit.asp" Category="11.FogBugz) Remote Bug Submission" Description="Url for FogBugz Submission." %>
+<%@ Property Name="fogBugzUsername" Type="System.String" Optional="True" Default="BugSubmitter" Category="11.FogBugz) Remote Bug Submission" Description="Username for FogBugz Submission." %>
+<%@ Property Name="fogBugzProject" Type="System.String" Optional="True" Default="Project" Category="11.FogBugz) Remote Bug Submission" Description="Project for FogBugz Submission." %>
+<%@ Property Name="fogBugzArea" Type="System.String" Optional="True" Default="Misc" Category="11.FogBugz) Remote Bug Submission" Description="Area for FogBugz Submission." %>
+<%@ Property Name="fogBugzDefaultEmail" Type="System.String" Optional="True" Default="noEmail@127.0.0.1" Category="11.FogBugz) Remote Bug Submission" Description="Default Email for FogBugz Submission." %>
+
+<%-- 12) Source Control --%>
+<%@ Property Name="SourceControl" Type="MasterCodeBehind.SourceControl.Types" Optional="True" Default="None" Category="12) Source Control" Description="Type of Source Control to include in the template." %>
+<%-- 12.Hg) Source Control --%>
+<%@ Property Name="HgPlugin" Type="MasterCodeBehind.SourceControl.HgPluginTypes" Optional="True" Default="None" Category="12.Hg) Source Control" Description="Visual Studio Source Control plugin to include in the template." %>
+
+<%-- 13) SQL Comparrison --%>
+
+<%-- 99) OVERWRITING --%>
+<%@ Property Name="Overwrite" Type="System.Boolean" Optional="True" Default="False" Category="XX) !!! Overwrite !!!" Description="This will overwrite all files with fresh copies. If you've made any changes you want to keep in the module, Keep this setting false." %>
+
+
+<%-- Register the Templates --%>
+<%@ Register Name="ControlResxTemplate" Template="App_LocalResources/$AdditionalControl$.ascx.resx.cst" MergeProperties="False" %>
+<%@ Register Name="SettingsResxTemplate" Template="App_LocalResources/Settings.ascx.resx.cst" MergeProperties="False" %>
+<%@ Register Name="BuildFileTemplate" Template="BuildFiles/$ModuleName$Build.targets.cst" MergeProperties="False" %>
+<%@ Register Name="IControllerTemplate" Template="Components/I$ModuleName$Controller.cs.cst" MergeProperties="False" %>
+<%@ Register Name="ControllerTemplate" Template="Components/$ModuleName$Controller.cs.cst" MergeProperties="False" %>
+<%@ Register Name="CommonTemplate" Template="Components/Common.cs.cst" MergeProperties="False" %>
+<%@ Register Name="GeneratedTemplate" Template="Components/Generated.cs.cst" MergeProperties="False" %>
+<%@ Register Name="CSSTemplate" Template="css/$ModuleName$.css.cst" MergeProperties="False" %>
+<%@ Register Name="ControlPermissionJsTemplate" Template="js/$AdditionalControl$Permission$Permission$.cst" MergeProperties="False" %>
+<%@ Register Name="ControlJsTemplate" Template="js/$AdditionalControl.js.cst" MergeProperties="False" %>
+<%@ Register Name="ModuleJsTemplate" Template="js/$ModuleName$.js.cst" MergeProperties="False" %>
+<%@ Register Name="FrameworkJsTemplate" Template="js/Framework.js.cst" MergeProperties="False" %>
+<%@ Register Name="LocalizedJsTemplate" Template="js/Localized.js.cst" MergeProperties="False" %>
+<%-- Removing MVC
+<%@ Register Name="ControlPresenterTemplate" Template="Presenters/$AdditionalControl$Presenter.cs.cst" MergeProperties="False" %>
+--%>
+<%@ Register Name="AssemblyInfoTemplate" Template="Properties/AssemblyInfo.cs.cst" MergeProperties="False" %>
+<%@ Register Name="VersionSqlTemplate" Template="sql/00.00.00.sql.cst" MergeProperties="False" %>
+<%@ Register Name="UninstallSqlTemplate" Template="sql/Uninstall.sql.cst" MergeProperties="False" %>
+<%-- Removing MVC
+<%@ Register Name="IControlViewTemplate" Template="Views/Interfaces/I$AdditionalControl$View.cs.cst" MergeProperties="False" %>
+<%@ Register Name="ControlModelTemplate" Template="Views/Models/$AdditionalControl$Model.cs.cst" MergeProperties="False" %>
+--%>
+<%@ Register Name="ControlCsTemplate" Template="Views/$AdditionalControl$.ascx.cs.cst" MergeProperties="False" %>
+<%@ Register Name="ControlAscxTemplate" Template="Views/$AdditionalControl$.ascx.cst" MergeProperties="False" %>
+<%@ Register Name="ControlDesignerTemplate" Template="Views/$AdditionalControl$.ascx.designer.cs.cst" MergeProperties="False" %>
+<%@ Register Name="ManifestTemplate" Template="RootFiles/$ModuleName$.dnn.cst" MergeProperties="False" %>
+<%@ Register Name="CsProjTemplate" Template="RootFiles/$ModuleName$.csproj.cst" MergeProperties="False" %>
+<%@ Register Name="SlnTemplate" Template="$ModuleName$.Tests/$ModuleName$.sln.cst" MergeProperties="False" %>
+<%@ Register Name="LicenseTemplate" Template="RootFiles/license.txt.cst" MergeProperties="False" %>
+<%@ Register Name="ReleaseNotesTemplate" Template="RootFiles/releaseNotes.txt.cst" MergeProperties="False" %>
+<%@ Register Name="VersionTemplate" Template="RootFiles/Version.txt.cst" MergeProperties="False" %>
+<%@ Register Name="SettingsCsTemplate" Template="RootFiles/Settings.ascx.cs.cst" MergeProperties="False" %>
+<%@ Register Name="SettingsAscxTemplate" Template="RootFiles/Settings.ascx.cst" MergeProperties="False" %>
+<%@ Register Name="SettingsDesignerTemplate" Template="RootFiles/Settings.ascx.designer.cs.cst" MergeProperties="False" %>
+<%@ Register Name="SettingsJsTemplate" Template="js/Settings.js.cst" MergeProperties="False" %>
+<%@ Register Name="DnnWebApiAjaxJsTemplate" Template="js/DnnWebApiAjax.js.cst" MergeProperties="False" %>
+<%-- DnnWebApi Files --%>
+<%@ Register Name="DnnWebApiControllerCsTemplate" Template="WebApi/Controllers/$Controller$Controller.cs.cst" MergeProperties="False" %>
+<%@ Register Name="DnnWebApiRouteMapperCsTemplate" Template="WebApi/RouteMapper.cs.cst" MergeProperties="False" %>
+
+<%-- Register the Test Templates--%>
+<%@ Register Name="ControlEventArgsCodeTestsTemplate" Template="$ModuleName$.Tests/CodeTests/$AdditionalControl$Events.Tests.cs.cst" MergeProperties="False" %>
+<%@ Register Name="ControlModelCodeTestsTemplate" Template="$ModuleName$.Tests/CodeTests/$AdditionalControl$Model.Tests.cs.cst" MergeProperties="False" %>
+<%@ Register Name="ControlPresenterCodeTestsTemplate" Template="$ModuleName$.Tests/CodeTests/$AdditionalControl$Presenter.Tests.cs.cst" MergeProperties="False" %>
+<%@ Register Name="ModuleControllerCodeTestsTemplate" Template="$ModuleName$.Tests/CodeTests/$ModuleName$Controller.Tests.cs.cst" MergeProperties="False" %>
+
+<%@ Register Name="ControlJsTestsTemplate" Template="$ModuleName$.Tests/JavascriptTests/$AdditionalControl$.Tests.js.cst" MergeProperties="False" %>
+<%@ Register Name="ModuleJsTestsTemplate" Template="$ModuleName$.Tests/JavascriptTests/$ModuleName$.Tests.js.cst" MergeProperties="False" %>
+<%@ Register Name="SettingsJsTestsTemplate" Template="$ModuleName$.Tests/JavascriptTests/Settings.Tests.js.cst" MergeProperties="False" %>
+
+<%@ Register Name="AssemblyInfoTestsTemplate" Template="$ModuleName$.Tests/Properties/AssemblyInfo.cs.cst" MergeProperties="False" %>
+
+<%@ Register Name="WebControlNavigationTestsTemplate" Template="$ModuleName$.Tests/WebTests/WebControlNavigation.Tests.cs.cst" MergeProperties="False" %>
+<%@ Register Name="WebInstallerTestsTemplate" Template="$ModuleName$.Tests/WebTests/WebInstaller.Tests.cs.cst" MergeProperties="False" %>
+<%@ Register Name="WebLoggingTestsTemplate" Template="$ModuleName$.Tests/WebTests/WebLogging.Tests.cs.cst" MergeProperties="False" %>
+<%@ Register Name="WebSettingsTestsTemplate" Template="$ModuleName$.Tests/WebTests/WebSettings.Tests.cs.cst" MergeProperties="False" %>
+
+<%@ Register Name="ModuleSlnTemplate" Template="$ModuleName$.Tests/$ModuleName$.sln.cst" MergeProperties="False" %>
+<%@ Register Name="ModuleVsmdiTemplate" Template="$ModuleName$.Tests/$ModuleName$.vsmdi.cst" MergeProperties="False" %>
+<%@ Register Name="AppConfigTemplate" Template="$ModuleName$.Tests/app.config.cst" MergeProperties="False" %>
+<%@ Register Name="TraceAndTestImpactTemplate" Template="$ModuleName$.Tests/TraceAndTestImpact.testsettings.cst" MergeProperties="False" %>
+<%@ Register Name="WebTestBaseTemplate" Template="$ModuleName$.Tests/WebTestBase.cs.cst" MergeProperties="False" %>
+
+<script runat="template">
+
+    #region Folder Strings
+
+    public string dirRootFolder;
+    public string dirReferences;
+    public string dirApp_LocalResources;
+    public string dirBuildFiles;
+    public string dirComponents;
+    public string dirCss;
+    public string dirJs;
+    /* Removing MVC
+    public string dirPresenters;
+    */
+    public string dirProperties;
+    public string dirSql;
+    public string dirViews;
+    /* Removing MVC
+    public string dirViewsControls;
+    public string dirViewsInterfaces;
+    public string dirViewsModels;
+    */
+    public string dirWebApi;
+    public string dirWebApiControllers;
+    //Test Folders
+    public string dirTestRoot;
+    public string dirCodeTests;
+    public string dirJavascriptTests;
+    public string dirWebTests;
+    public string dirTestProperties;
+
+    #endregion
+
+    public void GenerateProject()
+    {
+        CreateProjectFolders();
+        CreateControls();
+        CreateSettingsControl();
+        CreateProjectFile();
+        CreateBuildFile();
+        /* Removing MVC
+        CreateControllerFiles();
+        */
+        CreateGeneratedFile();
+        CreateCommonFile();
+        CreateCssFile();
+        CopyOverAdditionalCssFiles();
+        CreateJavascriptCoreFiles();
+        CreateJavascriptLocalizationFiles();
+        CopyOverAdditionalJavascriptFiles();
+        CreateAssemblyInfoFile();
+        //CreateSQLFiles();
+        CreateRootTextFiles();
+        CreateDnnManifestFile();
+        CreateWebApiFiles();
+    
+        Response.Unindent();
+        Response.Write("Finished Module Generation");
+        
+        Response.Write("Starting References Copying");
+        Response.Indent();
+        
+        MasterCodeBehind.Logging.Copy(this.CodeTemplateInfo.DirectoryName, dirReferences, LoggingProvider, netVersion, log4netVersion);
+        MasterCodeBehind.RemoteBugSub.Copy(this.CodeTemplateInfo.DirectoryName, dirReferences, RemoteBugSubProvider, netVersion, fogBugzVersion);
+        
+        string dalLocation = String.Empty;
+        switch(DataAccessLayerProvider)
+        {
+            case MasterCodeBehind.DataAccessLayer.Types.netTiers:
+                dalLocation = netTiersLocation;
+            break;
+            default:
+                //Do Nothing
+                break;
+        }
+        if(!String.IsNullOrEmpty(dalLocation)){MasterCodeBehind.DataAccessLayer.Copy(dalLocation, dirReferences, DataAccessLayerProvider, netVersion);}
+        
+        MasterCodeBehind.SourceControl.Copy(this.CodeTemplateInfo.DirectoryName, dirRootFolder, SourceControl, netVersion, HgPlugin);
+        
+        Response.Unindent();
+        Response.Write("Finished References Copying");
+    }
+
+    public void CreateProjectFolders()
+    {
+        Response.WriteLine("Entered CreateProjectFolders");
+        Response.Indent();
+        
+        SetProjectFolderValues();
+        
+        System.IO.Directory.CreateDirectory(dirRootFolder);
+        System.IO.Directory.CreateDirectory(dirReferences);
+        System.IO.Directory.CreateDirectory(dirApp_LocalResources);
+        System.IO.Directory.CreateDirectory(dirBuildFiles);
+        System.IO.Directory.CreateDirectory(dirComponents);
+        System.IO.Directory.CreateDirectory(dirCss);
+        System.IO.Directory.CreateDirectory(dirJs);
+        /* Removing MVC
+        System.IO.Directory.CreateDirectory(dirPresenters);
+        */
+        System.IO.Directory.CreateDirectory(dirProperties);
+        System.IO.Directory.CreateDirectory(dirSql);
+        System.IO.Directory.CreateDirectory(dirViews);
+        /* Removing MVC
+        System.IO.Directory.CreateDirectory(dirViewsControls);
+        System.IO.Directory.CreateDirectory(dirViewsInterfaces);
+        System.IO.Directory.CreateDirectory(dirViewsModels);
+        */
+        System.IO.Directory.CreateDirectory(dirWebApi);
+        System.IO.Directory.CreateDirectory(dirWebApiControllers);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateProjectFolders");
+    } 
+    public void SetProjectFolderValues()
+    {
+        Response.WriteLine("Entered SetProjectFolderValues");
+        Response.Indent();
+        
+        Response.WriteLine("Starting Setting Project Folder Values");
+        dirRootFolder = ModuleFolderLocation + @"\" + CodeSafeModuleName;
+        dirReferences = dirRootFolder + @"\References";
+        dirApp_LocalResources = dirRootFolder + @"\App_LocalResources";
+        dirBuildFiles = dirRootFolder + @"\BuildFiles";
+        dirComponents = dirRootFolder + @"\Components";
+        dirCss = dirRootFolder + @"\css";
+        dirJs = dirRootFolder + @"\js";
+        /* Removing MVC
+        dirPresenters = dirRootFolder + @"\Presenters";
+        */
+        dirProperties = dirRootFolder + @"\Properties";
+        dirSql = dirRootFolder + @"\sql";
+        dirViews = dirRootFolder + @"\Views";
+        /* Removing MVC
+        dirViewsControls = dirViews + @"\Controls";
+        dirViewsInterfaces = dirViews + @"\Interfaces";
+        dirViewsModels = dirViews + @"\Models";
+        */
+        dirWebApi = dirRootFolder + @"\WebApi";
+        dirWebApiControllers = dirWebApi + @"\Controllers";
+        Response.WriteLine("Finished Setting Project Folder Values");
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting SetProjectFolderValues");
+    }
+    public void CreateControls()
+    {
+        Response.WriteLine("Entered CreateControls");
+        Response.Indent();
+        
+        foreach(string s in (AdditionalControls + ";" + MasterCodeBehind.ViewControl).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries))
+        {
+            Response.WriteLine("Generating files for " + s);
+            Response.Indent();
+            
+            string curFile = "";
+            
+            //ascx
+            curFile = dirViews + @"\" + s + ".ascx";
+            ControlAscxTemplate controlAscx = this.Create<ControlAscxTemplate>();
+            controlAscx.AdditionalControl = s;
+            this.CopyPropertiesTo(controlAscx);
+            RenderFile(controlAscx, curFile);
+            
+            //cs
+            curFile = dirViews + @"\" + s + ".ascx.cs";
+            ControlCsTemplate controlCs = this.Create<ControlCsTemplate>();
+            controlCs.AdditionalControl = s;
+            this.CopyPropertiesTo(controlCs);
+            RenderFile(controlCs, curFile);
+            
+            //designer
+            curFile = dirViews + @"\" + s + ".ascx.designer.cs";
+            ControlDesignerTemplate controlDes = this.Create<ControlDesignerTemplate>();
+            controlDes.AdditionalControl = s;
+            this.CopyPropertiesTo(controlDes);
+            RenderFile(controlDes, curFile);
+            
+            //resx
+            curFile = dirApp_LocalResources + @"\" + s + ".ascx.resx";
+            ControlResxTemplate controlResx = this.Create<ControlResxTemplate>();
+            controlResx.AdditionalControl = s;
+            this.CopyPropertiesTo(controlResx);
+            RenderFile(controlResx, curFile);
+            if(!String.IsNullOrEmpty(CulturesToInclude))
+            {
+                Response.WriteLine("Generating Additional Culture Resx files for " + s);
+                Response.Indent();
+                foreach(string c in CulturesToInclude.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    curFile = dirApp_LocalResources + @"\" + s + ".ascx." + c + ".resx";
+                    controlResx = this.Create<ControlResxTemplate>();
+                    controlResx.AdditionalControl = s;
+                    controlResx.Culture = c;                    
+                    this.CopyPropertiesTo(controlResx);
+                    RenderFile(controlResx, curFile);
+                }
+                Response.Unindent();
+            }
+            
+            //js
+            curFile = dirJs + @"\" + s + ".js";
+            ControlJsTemplate controlJs = this.Create<ControlJsTemplate>();
+            controlJs.AdditionalControl = s;
+            RenderFile(controlJs, curFile);
+            
+            //permission js
+            Response.WriteLine("Generating Permission files for " + s);
+            Response.Indent();
+            foreach(string p in (AdditionalPermissions + MasterCodeBehind.DefaultPermissions + (HasDnnExtendPermissions ? MasterCodeBehind.ExtendedPermissions : String.Empty)).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) 
+            {
+                curFile = dirJs + @"\" + s + "Permission" + p + ".js";
+                ControlPermissionJsTemplate controlPermissionJs = Create<ControlPermissionJsTemplate>();
+                controlPermissionJs.AdditionalControl = s;
+                controlPermissionJs.AdditionalPermission = p;
+                RenderFile(controlPermissionJs, curFile);
+            }
+            Response.Unindent();
+            
+            /*
+                Removing MVC
+            //presenter
+            curFile = dirPresenters + @"\" + s + "Presenter.cs";
+            ControlPresenterTemplate controlPresenter = this.Create<ControlPresenterTemplate>();
+            controlPresenter.AdditionalControl = s;
+            RenderFile(controlPresenter, curFile);
+            
+            //Interface
+            curFile = dirViewsInterfaces + @"\I" + s + "View.cs";
+            IControlViewTemplate iControlView = this.Create<IControlViewTemplate>();
+            iControlView.AdditionalControl = s;
+            RenderFile(iControlView, curFile);
+            
+            //Model
+            curFile = dirViewsModels + @"\" + s + "Model.cs";
+            ControlModelTemplate controlModel = this.Create<ControlModelTemplate>();
+            controlModel.AdditionalControl = s;
+            RenderFile(controlModel, curFile);
+            */
+            Response.Unindent();
+        }
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateControls");
+    }
+    public void CreateSettingsControl()
+    {
+        Response.WriteLine("Entered CreateSettingsControl");
+        Response.Indent();
+            
+        string curFile = "";
+        
+        //ascx
+        curFile = dirRootFolder + @"\Settings.ascx";
+        SettingsAscxTemplate controlAscx = this.Create<SettingsAscxTemplate>();
+        this.CopyPropertiesTo(controlAscx);
+        RenderFile(controlAscx, curFile);
+            
+        //cs
+        curFile = dirRootFolder + @"\Settings.ascx.cs";
+        SettingsCsTemplate controlCs = this.Create<SettingsCsTemplate>();
+        this.CopyPropertiesTo(controlCs);
+        RenderFile(controlCs, curFile);
+        
+        //designer
+        curFile = dirRootFolder + @"\Settings.ascx.designer.cs";
+        SettingsDesignerTemplate controlDes = this.Create<SettingsDesignerTemplate>();
+        this.CopyPropertiesTo(controlDes);
+        RenderFile(controlDes, curFile);
+        
+        //resx
+        curFile = dirApp_LocalResources + @"\Settings.ascx.resx";
+        SettingsResxTemplate controlResx = this.Create<SettingsResxTemplate>();
+        this.CopyPropertiesTo(controlResx);
+        RenderFile(controlResx, curFile);
+        if(!String.IsNullOrEmpty(CulturesToInclude))
+        {
+            Response.WriteLine("Generating Additional Culture Resx files for Settings");
+            Response.Indent();
+            foreach(string c in CulturesToInclude.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                Response.WriteLine("Generating Culture Resx files for " + c);
+                curFile = dirApp_LocalResources + @"\Settings.ascx." + c + ".resx";
+                controlResx = this.Create<SettingsResxTemplate>();
+                controlResx.Culture = c;                    
+                this.CopyPropertiesTo(controlResx);
+                RenderFile(controlResx, curFile);
+            }
+            Response.Unindent();
+        }
+        
+        //js
+        curFile = dirJs + @"\Settings.js";
+        SettingsJsTemplate controlJs = this.Create<SettingsJsTemplate>();
+        RenderFile(controlJs, curFile);        
+        
+        curFile = dirJs + @"\dnnWebApiAjax.js";
+        DnnWebApiAjaxJsTemplate dnnwebajaxJs = this.Create<DnnWebApiAjaxJsTemplate>();
+        RenderFile(dnnwebajaxJs, curFile);        
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateSettingsControl");
+    }
+    public void CreateProjectFile()
+    {
+        Response.WriteLine("Entered CreateProjectFile");
+        Response.Indent();
+        
+        string curFile = dirRootFolder + @"\" + RootNamespace + "." + CodeSafeModuleName + ".csproj";
+        CsProjTemplate proj = this.Create<CsProjTemplate>();
+        this.CopyPropertiesTo(proj);
+        RenderFile(proj, curFile, true);
+        
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateProjectFile");
+    }
+    public void CreateBuildFile()
+    {
+        Response.WriteLine("Entered CreateBuildFile");
+        Response.Indent();
+        
+        string curFile = dirBuildFiles + @"\" + CodeSafeModuleName + "Build.targets";
+        BuildFileTemplate build = this.Create<BuildFileTemplate>();
+        this.CopyPropertiesTo(build);
+        RenderFile(build, curFile, true);
+        
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateBuildFile");
+    }
+    /* Removing MVC
+    public void CreateControllerFiles()
+    {
+        Response.WriteLine("Entered CreateControllerFiles");
+        Response.Indent();
+        
+        string curFile = dirComponents + @"\I" + CodeSafeModuleName + "Controller.cs";
+        IControllerTemplate iCont = this.Create<IControllerTemplate>();
+        this.CopyPropertiesTo(iCont);
+        RenderFile(iCont, curFile);
+        
+        curFile = dirComponents + @"\" + CodeSafeModuleName + "Controller.cs";
+        ControllerTemplate cont = this.Create<ControllerTemplate>();
+        this.CopyPropertiesTo(cont);
+        RenderFile(cont, curFile);        
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateControllerFiles");
+    }
+    */
+    public void CreateGeneratedFile()
+    {
+        Response.WriteLine("Entered CreateGeneratedFile");
+        Response.Indent();
+        
+        string curFile = dirComponents + @"\Generated.cs";
+        GeneratedTemplate gen = this.Create<GeneratedTemplate>();
+        this.CopyPropertiesTo(gen);
+        RenderFile(gen, curFile, true);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateGeneratedFile");
+    }
+    public void CreateCommonFile()
+    { 
+        Response.WriteLine("Entered CreateCommonFile");
+        Response.Indent();
+        
+        string curFile = dirComponents + @"\Common.cs";
+        CommonTemplate com = this.Create<CommonTemplate>();
+        this.CopyPropertiesTo(com);
+        RenderFile(com, curFile);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateCommonFile");
+    }
+    public void CreateCssFile()
+    { 
+        Response.WriteLine("Entered CreateCssFile");
+        Response.Indent();
+        
+        string curFile = dirCss + @"\" + CodeSafeModuleName + ".css";
+        CSSTemplate css = this.Create<CSSTemplate>();
+        this.CopyPropertiesTo(css);
+        RenderFile(css, curFile);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateCssFile");
+    }
+    public void CopyOverAdditionalCssFiles()
+    {
+        Response.WriteLine("Entered CopyOverAdditionalCssFiles");
+        Response.Indent();
+        
+        if(!String.IsNullOrEmpty(AdditionalCssFiles))
+        {
+            foreach(string s in AdditionalCssFiles.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if(System.IO.File.Exists(s)) System.IO.File.Copy(s, this.dirCss + @"\" + System.IO.Path.GetFileName(s), true);
+            }
+        }
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CopyOverAdditionalCssFiles");
+    }
+    public void CreateJavascriptCoreFiles()
+    {
+        Response.WriteLine("Entered CreateJavascriptCoreFiles");
+        Response.Indent();
+        
+        string curFile = dirJs + @"\Framework.js";
+        FrameworkJsTemplate fJs = this.Create<FrameworkJsTemplate>();
+        this.CopyPropertiesTo(fJs);
+        RenderFile(fJs, curFile);
+        
+        curFile = dirJs + @"\" + CodeSafeModuleName + ".js";
+        ModuleJsTemplate mJs = this.Create<ModuleJsTemplate>();
+        this.CopyPropertiesTo(mJs);
+        RenderFile(mJs, curFile);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateJavascriptCoreFiles");
+        
+    }
+    public void CreateJavascriptLocalizationFiles()
+    {
+        Response.WriteLine("Entered CreateJavascriptLocalizationFiles");
+        Response.Indent();
+        
+        string curFile = dirJs + @"\Localized.js";
+        LocalizedJsTemplate lJs = this.Create<LocalizedJsTemplate>();
+        this.CopyPropertiesTo(lJs);
+        RenderFile(lJs, curFile);
+        
+        if(!String.IsNullOrEmpty(CulturesToInclude))
+        {
+            foreach(string s in CulturesToInclude.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                curFile = dirJs + @"\Localized." + s + ".js";
+                lJs = this.Create<LocalizedJsTemplate>();
+                lJs.Culture = s;
+                this.CopyPropertiesTo(lJs);
+                RenderFile(lJs, curFile);
+            }
+        }
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateJavascriptLocalizationFiles");        
+    }
+    public void CopyOverAdditionalJavascriptFiles()
+    {
+        Response.WriteLine("Entered CopyOverAdditionalJavascriptFiles");
+        Response.Indent();
+        
+        if(!String.IsNullOrEmpty(AdditionalJavascriptFiles))
+        {
+            foreach(string s in AdditionalJavascriptFiles.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if(System.IO.File.Exists(s)) System.IO.File.Copy(s, this.dirJs + @"\" + System.IO.Path.GetFileName(s), true);
+            }
+        }
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CopyOverAdditionalJavascriptFiles");
+    }
+    public void CreateAssemblyInfoFile()
+    { 
+        Response.WriteLine("Entered CreaterAssemblyInfoFile");
+        Response.Indent();
+        
+        string curFile = dirProperties + @"\AssemblyInfo.cs";
+        AssemblyInfoTemplate asm = this.Create<AssemblyInfoTemplate>();
+        this.CopyPropertiesTo(asm);
+        RenderFile(asm, curFile);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreaterAssemblyInfoFile");
+    }
+    public void CreateRootTextFiles()
+    { 
+        Response.WriteLine("Entered CreaterAssemblyInfoFile");
+        Response.Indent();
+        
+        string curFile;
+        
+        if(ManifestIncludeLicenseFile)
+        {
+            curFile = dirRootFolder + @"\license.txt";
+            LicenseTemplate lic = this.Create<LicenseTemplate>();
+            this.CopyPropertiesTo(lic);
+            RenderFile(lic, curFile);
+        }
+        
+        if(ManifestIncludeReleaseNotesFile)
+        {
+            curFile = dirRootFolder + @"\releaseNotes.txt";
+            ReleaseNotesTemplate rel = this.Create<ReleaseNotesTemplate>();
+            this.CopyPropertiesTo(rel);
+            RenderFile(rel, curFile);
+        }
+        
+        curFile = dirRootFolder + @"\version.txt";
+        VersionTemplate ver = this.Create<VersionTemplate>();
+        this.CopyPropertiesTo(ver);
+        RenderFile(ver, curFile);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreaterAssemblyInfoFile");
+    }
+    public void CreateDnnManifestFile()
+    { 
+        Response.WriteLine("Entered CreateDnnManifestFile");
+        Response.Indent();
+        
+        string curFile = dirRootFolder + @"\" + CodeSafeModuleName + ".dnn";
+        ManifestTemplate dnn = this.Create<ManifestTemplate>();
+        this.CopyPropertiesTo(dnn);
+        RenderFile(dnn, curFile);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateDnnManifestFile");
+    }
+    
+    public void CreateWebApiFiles()
+    {
+        Response.WriteLine("Entered CreateWebApiFiles");
+        Response.Indent();
+        
+        if(String.IsNullOrEmpty(WebApiControllerNames))
+        {
+            string defaultFile = dirWebApiControllers + @"\" + CodeSafeModuleName + "Controller.cs";
+            DnnWebApiControllerCsTemplate controller = this.Create<DnnWebApiControllerCsTemplate>();
+            controller.WebApiControllerName = CodeSafeModuleName;
+            this.CopyPropertiesTo(controller);
+            RenderFile(controller, defaultFile);
+        }
+        else
+        {
+            foreach(string s in WebApiControllerNames.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string curFile = dirWebApiControllers + @"\" + s + "Controller.cs";
+                DnnWebApiControllerCsTemplate controller = this.Create<DnnWebApiControllerCsTemplate>();
+                controller.WebApiControllerName = s;
+                this.CopyPropertiesTo(controller);
+                RenderFile(controller, curFile);
+            }
+        }
+        
+        string mapperFile = dirWebApi + @"\RouteMapper.cs";
+        DnnWebApiRouteMapperCsTemplate mapper = this.Create<DnnWebApiRouteMapperCsTemplate>();
+        this.CopyPropertiesTo(mapper);
+        RenderFile(mapper, mapperFile);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateWebApiFiles");
+    }
+    
+    //Test Project Function
+    public void GenerateTestProject()
+    {
+        
+    }
+    public void SetTestProjectFolderValues()
+    {
+        Response.WriteLine("Entered SetTestProjectFolderValues");
+        Response.Indent();
+        
+        Response.WriteLine("Starting Setting Test Project Folder Values");
+        dirTestRoot = dirRootFolder + @"\" + ModuleName + @".Tests";
+        dirCodeTests = dirTestRoot + @"\CodeTests";
+        dirJavascriptTests = dirTestRoot + @"\JavascriptTests";
+        dirWebTests = dirTestRoot + @"\WebTests";
+        dirTestProperties = dirTestRoot + @"\Properties";
+        Response.WriteLine("Finished Setting Test Project Folder Values");
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting SetTestProjectFolderValues");
+    }
+    public void CreateTestProjectFolders()
+    {
+        Response.WriteLine("Entered CreateTestProjectFolders");
+        Response.Indent();
+
+        SetTestProjectFolderValues();
+
+        System.IO.Directory.CreateDirectory(dirTestRoot);
+        System.IO.Directory.CreateDirectory(dirCodeTests);
+        System.IO.Directory.CreateDirectory(dirJavascriptTests);
+        System.IO.Directory.CreateDirectory(dirWebTests);
+        System.IO.Directory.CreateDirectory(dirTestProperties);
+        
+        Response.Unindent();
+        Response.WriteLine("Exiting CreateTestProjectFolders");
+    }
+    
+public void Generate()
+{
+    DateTime startTime = DateTime.Now;
+    Response.WriteLine("Beginning Module Generation");
+    Response.Indent();
+    
+    GenerateProject();
+    
+    DateTime stopTime = DateTime.Now;
+    TimeSpan duration = stopTime - startTime;
+    Response.WriteLine(duration.TotalSeconds);
+}
+
+public void RenderFile(CodeTemplate template, string curFile)
+{
+    RenderFile(template, curFile, Overwrite);
+}
+public void RenderFile(CodeTemplate template, string curFile, bool Overwrite)
+{    
+    this.CopyPropertiesTo(template);
+    if(!System.IO.File.Exists(curFile) || Overwrite)
+    {
+        template.RenderToFile(curFile, Overwrite);
+        Response.WriteLine("Generated " + System.IO.Path.GetFileName(curFile));
+    }
+    else
+    {
+        Response.WriteLine(System.IO.Path.GetFileName(curFile) + " already exists.");
+    }
+}
+
+public void SaveSettings()
+{
+    Response.WriteLine("Entered SaveSettings");
+    Response.Indent();
+        
+    this.SavePropertiesToXmlFile(System.IO.Path.Combine(dirRootFolder, ModuleName + " .csp"));
+    
+    Response.Unindent();
+    Response.WriteLine("Exiting SaveSettings");
+}
+
+
+</script>
+
+<% this.Generate(); %>

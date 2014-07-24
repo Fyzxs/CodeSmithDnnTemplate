@@ -1,0 +1,67 @@
+<%-- 
+Name: Common.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" src="../MasterCodeBehind.cs" TargetLanguage="C#"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="HasSettingControl" Type="System.Boolean" Optional="True" Default="True" Category="01.1) Module Controls" Description="Will include the Settings.ascx files." %>
+
+<%-- 05) ASP.NET --%>
+<%@ Property Name="netVersion" Type="MasterCodeBehind.dotNet.Version" Optional="False" Category="05) ASP.NET" Description="Version of .NET to set the module to." %>
+
+<%-- 09) Logging --%>
+<%@ Property Name="LoggingProvider" Type="MasterCodeBehind.Logging.Types" Optional="True" Default="None" Category="08) Logging" Description="Type of Logging to include in the template." %>
+
+<%-- 11) Remote Bug Submission --%>
+<%@ Property Name="RemoteBugSubProvider" Type="MasterCodeBehind.RemoteBugSub.Types" Optional="True" Default="None" Category="11) Remote Bug Submission" Description="Type of Remote Bug Submission to include in the template." %>
+
+<%--Begin File Generation Code --%>
+using System;
+using DotNetNuke.Entities.Modules;
+using DotNetNuke.UI.Modules;
+
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>.Components
+{
+    <%= MasterCodeBehind.RemoteBugSub.SubmissionDeclaration(RemoteBugSubProvider, netVersion) %>
+
+    <%= MasterCodeBehind.Logging.LoggingDeclaration(LoggingProvider, netVersion) %>
+
+    #region Quick Access Module Info
+    internal class ModuleInfo
+    {
+        private readonly ModuleInstanceContext _context;
+        
+        public int TabId{ get{return _context.TabId;} }
+        public int ModuleId{ get{return _context.ModuleId;} }
+        public int PortalId{ get{return _context.PortalId;} }
+        public int UserId{ get{return _context.PortalSettings.UserId;} }
+
+        public ModuleInfo(ModuleInstanceContext context)
+        {
+            _context = context;
+        }
+    }
+    #endregion
+
+<% if(HasSettingControl) { %>
+    public partial class Settings
+    {
+        private readonly ModuleController _controller = new ModuleController();
+
+        public struct ModuleSetting
+        {
+            public const string ModuleTemplate = "ModuleTemplate";
+        }
+
+        public struct TabModuleSetting
+        {
+            public const string TabModuleTemplate = "TabModuleTemplate";
+        }
+    }
+<% } %>
+}

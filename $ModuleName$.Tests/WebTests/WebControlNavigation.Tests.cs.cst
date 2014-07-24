@@ -1,0 +1,147 @@
+<%-- 
+Name: WebControlNaviation.Tests.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControls" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="Semi-Colon seperated list of the Names {no whitespace} of the controls. eg - Edit;AddNew;AdminEdit" %>
+
+
+<%--Begin File Generation Code --%>
+using System;
+using System.Text.RegularExpressions;
+using System.Web;
+using DotNetNuke.Tests.UI.WatiN.Common;
+using DotNetNuke.Tests.UI.WatiN.Common.WatiNObjects;
+using Moq;
+using MbUnit.Framework;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Model;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Presenter;
+using WatiN.Core;
+
+
+namespace TestProj.Tests
+{
+    [TestFixture]
+    //[DependsOn(typeof(WebInstallTests))]
+    public class WebControlNavigationTests : WebTestBase
+    {
+        private string _basePageUrl = "";
+        #region [Setup / TearDown]
+
+        [FixtureSetUp]
+        public void FixtureSetUp()
+        {
+            //Take this out when tests are totally set up - Can't run the 'InstallModule' test with web.config modifications
+            ieInstance = WatiNUtil.OpenIEInstance(SiteURL, SilentMode, IETimeOut, AutoCloseIE);
+
+            ieInstance.GoTo(SiteURL + @"/TestPage.aspx");
+        }
+
+        /// <summary>
+        /// Initialization for each test.
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+        }
+
+        /// <summary>
+        /// Clean up after each test.
+        /// </summary>
+        [TearDown]
+        public void TearDown()
+        {
+        }
+        #endregion
+
+        #region Tests
+<% foreach(string s in AdditionalControls.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+        #region <%= s %>
+        [Test]
+        public void NavigateTo<%= s %>ViaLinkIcon()
+        {
+            _basePageUrl = ieInstance.Url;
+            //Arrage
+            ieInstance.GoTo(SiteURL + @"/TestPage.aspx");
+            var image = ieInstance.Image(Find.ByTitle(s => s.EndsWith(@"<%= s %>")));
+
+            //Act
+            image.Click();
+
+            //Assert
+            Assert.IsTrue(ieInstance.Url.Contains(@"ctl/<%= s %>"));
+        }
+
+        [Test]
+        [DependsOn("NavigateTo<%= s %>ViaLinkIcon")]
+        public void NavigateBackViaCancelLinkIcon()
+        {
+            //Arrange
+            var link = ieInstance.Link(Find.ById(s => s.EndsWith(@"<%= s %>_lnkGoBackImage")));
+
+            //Act
+            link.Click();
+
+            //Assert
+            Assert.AreEqual(_basePageUrl.ToLower(), ieInstance.Url.ToLower());
+        }
+
+        [Test]
+        public void NavigateTo<%= s %>ViaLinkText()
+        {
+            _basePageUrl = ieInstance.Url;
+            //Arrange
+            ieInstance.GoTo(SiteURL + @"/TestPage.aspx");
+            var link = ieInstance.Link(Find.ByTitle(@"<%= s %>"));
+
+            //Act
+            link.Click();
+            System.Threading.Thread.Sleep(500);
+
+            //Assert
+            Assert.IsTrue(ieInstance.Url.Contains(@"ctl/<%= s %>"));
+        }
+
+        [Test]
+        [DependsOn("NavigateTo<%= s %>ViaLinkText")]
+        public void NavigateBackViaCancelLinkText()
+        {
+            //Arrange
+            var link = ieInstance.Link(Find.ById(s => s.EndsWith(@"<%= s %>_lnkGoBack")));
+
+            //Act
+            link.ClickNoWait();
+            System.Threading.Thread.Sleep(500);
+
+            //Assert
+            Assert.AreEqual(_basePageUrl.ToLower(), ieInstance.Url.ToLower());
+        }
+
+        [Test]
+        public void Verify<%= s %>CancelText()
+        {
+            //Arrange
+            ieInstance.GoTo(SiteURL + @"/TestPage.aspx");
+            var link<%= s %> = ieInstance.Link(Find.ByTitle(@"<%= s %>"));
+            link<%= s %>.Click();
+            var linkGoBack = ieInstance.Link(Find.ById(s => s.EndsWith(@"<%= s %>_lnkGoBack")));
+
+            //Act
+            var goBackText = linkGoBack.Text;
+
+            //Assert
+            Assert.AreEqual("Cancel", goBackText);
+        }
+        #endregion
+<% } %>
+        #endregion
+
+    }
+}

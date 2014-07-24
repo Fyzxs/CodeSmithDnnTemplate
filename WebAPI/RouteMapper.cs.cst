@@ -1,0 +1,47 @@
+<%-- 
+Name: RouteMapper.cs.cst
+Author: Quinn Gil
+Description:
+--%>
+<%@ CodeTemplate Language="C#" src="../MasterCodeBehind.cs" TargetLanguage="C#" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="DotNetNukeDirectory" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="DotNetNuke website directory to host module testing. This will also be the DNN.DLL Referenced by the project." Editor="System.Windows.Forms.Design.FolderNameEditor" %>
+
+<%-- 02.0) DotNetNuke WebAPI --%>
+<%@ Property Name="UseDnnWebApi" Type="System.Boolean" Optional="True" Default="False" Category="02.0) DotNetNuke WebAPI" Description="Include files for the DNN WebAPI" %>
+<%@ Property Name="WebApiControllerNames" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Semi-Colon seperated list of controller names to generate files for. Do Not include 'Controller' suffix." %>
+
+<%-- 05) ASP.NET --%>
+<%@ Property Name="netVersion" Type="MasterCodeBehind.dotNet.Version" Optional="False" Category="05) ASP.NET" Description="Version of .NET to set the module to." %>
+
+<%-- 06) Additional DLLs --%>
+<%@ Property Name="AdditionalDllsIncludedInZip" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will be included in the zip file." %>
+<%@ Property Name="AdditionalDllsNotZipped" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will NOT be included in the zip file." %>
+
+<%-- 07) JavaScript & CSS --%>
+<%@ Property Name="IncludeTemplateAjaxWrapper" Type="System.Boolean" Optional="True" Default="False" Category="07) JavaScript and CSS" Description="Adds some code designed to handle customized jQuery AJAX requests." %>
+
+<%--Begin File Generation Code --%>
+using System;
+using DotNetNuke.Web.Api;
+<% if(!String.IsNullOrEmpty(AdditionalDllsIncludedInZip)) { foreach(string s in AdditionalDllsIncludedInZip.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+<% if(System.IO.File.Exists(s)) { %>using <%= System.IO.Path.GetFileNameWithoutExtension(s) %>;<% } else { %>using <%= System.IO.Path.GetFileNameWithoutExtension(DotNetNukeDirectory + @"\bin\" + s) %>;<% } %>
+<% } } %>
+<% if(!String.IsNullOrEmpty(AdditionalDllsNotZipped)) { foreach(string s in AdditionalDllsNotZipped.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)){ %>
+<% if(System.IO.File.Exists(s)) { %>using <%= System.IO.Path.GetFileNameWithoutExtension(s) %>;<% } else { %>using <%= System.IO.Path.GetFileNameWithoutExtension(DotNetNukeDirectory + @"\bin\" + s) %>;<% } %>
+<% } } %>
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>.WebApi
+{
+    public class RouteMapper : IServiceRouteMapper
+    {
+        public void RegisterRoutes(IMapRoute mapRouteManager)
+        {
+            mapRouteManager.MapHttpRoute("<%= CodeSafeModuleName %>", "default", "{controller}/{action}", new[] {"<%= RootNamespace %>.<%= CodeSafeModuleName %>.WebApi.Controllers"});
+        }
+    }
+}

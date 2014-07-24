@@ -1,0 +1,36 @@
+syntax: glob
+*.suo
+*.zip
+*.user*
+_ReSharper.*/
+_ReSharper*\*
+TestResults/
+* Copy*
+*Copy *
+*@*
+obj/
+bin/
+obj/*.*
+bin/*.*
+*.ncb
+*.nlb
+*.aps
+*.clw
+*.pdb
+*.obj
+*.exe
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.Cache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.scc
+*.sig

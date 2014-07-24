@@ -1,0 +1,75 @@
+<%-- 
+Name: $AdditionalControl$EventNameEventArgs.Tests.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="JS"  src="../../MasterCodeBehind.cs"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControl" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="The control that this is being generated for." %>
+
+<%-- 01.2) Module Permissions --%>
+<%@ Property Name="HasDnnExtendPermissions" Type="System.Boolean" Optional="True" Default="False" Category="01.2) Module Permissions" Description="DNN Profession+ and Oliver Hine's Extended Persmission have these active." %>
+<%@ Property Name="AdditionalPermissions" Type="System.String" Optional="True" Category="01.2) Module Permissions" Description="Semi-Colon seperated list of the Names {no whitespace} of the Permissions. eg - AddNew;AdminEdit" %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. (eg - {CompanyName})" %>
+
+<%--Begin File Generation Code --%>
+(function ($) {
+    <%= OwnerFolder %>.extend(<%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>, { unitTests: {
+        runTests: function () {
+            setTimeout(<%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.unitTests.runTests_delayed, 100);
+        },
+        runTests_delayed: function () {
+            module("Localization Tests");
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.unitTests.localized.ControlName();
+
+            module("ASP.NET Controls");
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.unitTests.aspNetControls.verifyControls();
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.unitTests.aspNetControls.verifyCss();
+<% foreach(string p in (AdditionalPermissions + MasterCodeBehind.DefaultPermissions + (HasDnnExtendPermissions ? MasterCodeBehind.ExtendedPermissions : String.Empty)).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            module("Permissions - <%= p %>");
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.unitTests.permissions.<%= p %>.fakeTest();
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.unitTests.permissions.<%= p %>.fakeTestFails();
+<% } %>
+
+        },
+        localized: {
+            ControlName: function () {
+                test("<%= AdditionalControl %> Localization Exist", function () {
+                    expect(2);
+                    ok(<%= OwnerFolder %>.<%= CodeSafeModuleName %>.Localized.Controls.<%= AdditionalControl %>.ControlName != undefined, "Control Name Exists");
+                    equals(<%= OwnerFolder %>.<%= CodeSafeModuleName %>.Localized.Controls.<%= AdditionalControl %>.<%= AdditionalControl %>, "View Control", "Value");
+                });
+            }
+        },
+        aspNetControls: {
+            verifyControls: function () {
+                test("<%= AdditionalControl %> Controls Exist", function () {
+                    ok(<%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.elements.lblErrMsgs != undefined, "lblErrMsgs ID Exists");
+                    equals(jQuery('#' + <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.elements.lblErrMsgs).html(), "", "html Value");
+                });
+            },
+            verifyCss: function () {
+                test("Check CSS classes are assigned properly", function () {
+                    equals(jQuery('#' + <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.elements.lblErrMsgs).attr("class"), "validation", "Class");
+                });
+            }
+        },
+        permissions: {
+<% foreach(string p in (AdditionalPermissions + MasterCodeBehind.DefaultPermissions + (HasDnnExtendPermissions ? MasterCodeBehind.ExtendedPermissions : String.Empty)).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <%= p %>: {
+                fakeTest: function () { test("A sample test", function () { ok(true, "It passes when true"); }); },
+                fakeTestFails: function () { test("A second test", function () { ok(false, "and fails when false"); }); }
+            },
+<% } %>
+            generic: {
+                NotGonnaLie: function() { test("This is only here", function() { ok(true, "so the comma works simply");}); }
+            }
+        }
+    }
+    });
+})(jQuery);

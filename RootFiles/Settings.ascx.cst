@@ -1,0 +1,67 @@
+<%-- 
+Name: Settings.ascx.cst
+Author: Quinn Gil
+Description:
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="ASP" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. (eg - {CompanyName})" %>
+
+<%-- 02.1) DotNetNuke/Telerik --%>
+<%@ Property Name="HaveTelerikDeveloperLicense" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Uses Telerik controls where possible. UseDnnTelerikControls will override this and place DNN Wrapped controls when possible." %>
+<%@ Property Name="UseDnnTelerikControls" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Where possible, will use the DNN wrappers for Telerik Controls" %>
+
+<%--Begin File Generation Code --%>
+<%%@ Control Language="C#" AutoEventWireup="true" CodeBehind="Settings.ascx.cs" Inherits="<%= RootNamespace %>.<%= CodeSafeModuleName %>.Settings" %>
+<% if(HaveTelerikDeveloperLicense) { %><%%@ Register assembly="Telerik.Web.UI" namespace="Telerik.Web.UI" tagprefix="telerik" %><% } %>
+<%%@ Register TagPrefix="dnn" TagName="SectionHeadControl" Src="~/controls/SectionHeadControl.ascx" %>
+<%%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/labelcontrol.ascx" %>
+<% if(UseDnnTelerikControls) { %><%%@ Register TagPrefix="dnnRad" Assembly="DotNetNuke.Web" Namespace="DotNetNuke.Web.UI.WebControls" %><% } %>
+<% if(HaveTelerikDeveloperLicense) { %><telerik:RadScriptBlock ID="RadScriptBlockMain" runat="server"><% } %>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.Settings.elements = {
+                lblErrMsgs: '<%%= lblErrMsgs.ClientID %>',
+                lbltxtModuleTemplate: '<%%= lbltxtModuleTemplate.ClientID %>',
+                txtModuleTemplate: '<%%= txtModuleTemplate.ClientID %>',
+                lbltxtTabModuleTemplate: '<%%= lbltxtTabModuleTemplate.ClientID %>',
+                txtTabModuleTemplate: '<%%= txtTabModuleTemplate.ClientID %>'
+            };
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.Settings.init();
+        });
+    </script>
+<% if(HaveTelerikDeveloperLicense) { %></telerik:RadScriptBlock><% } %>
+<div class="validation">
+    <asp:Label ID="lblErrMsgs" runat="server"></asp:Label>
+</div>
+<dnn:SectionHeadControl ID="dnnSectionHeadControlInstance" runat="server" Section="divInstance" IncludeRule="True" />
+<div id="divInstanceSettings" runat="server">
+    <table>
+        <tr>
+            <td>
+                <dnn:Label ID="lbltxtTabModuleTemplate" runat="server" ControlName="txtTabModuleTemplate"></dnn:Label>
+            </td>
+            <td>
+                <% if(UseDnnTelerikControls) { %><dnnRad:DnnTextBox ID="txtTabModuleTemplate" runat="server"></dnnRad:DnnTextBox><% } else if(HaveTelerikDeveloperLicense) { %><telerik:RadTextBox ID="txtTabModuleTemplate" runat="server"></telerik:RadTextBox><% } else { %><asp:textbox id="txtTabModuleTemplate" runat="server"/><% } %>
+            </td>
+        </tr>
+    </table>
+</div>
+<dnn:SectionHeadControl ID="dnnSectionHeadControlModule" runat="server" Section="divModule" IncludeRule="True" />
+<div id="divModuleSettings" runat="server">
+    <table>
+        <tr>
+            <td>
+                <dnn:Label id="lbltxtModuleTemplate" runat="server" ControlName="txtModuleTemplate"></dnn:Label>
+                </td>
+            <td>
+                <% if(UseDnnTelerikControls) { %><dnnRad:DnnTextBox ID="txtModuleTemplate" runat="server"></dnnRad:DnnTextBox><% } else if(HaveTelerikDeveloperLicense) { %><telerik:RadTextBox ID="txtModuleTemplate" runat="server"></telerik:RadTextBox><% } else { %><asp:textbox id="txtModuleTemplate" runat="server"/><% } %>
+            </td>
+        </tr>
+    </table>
+</div>

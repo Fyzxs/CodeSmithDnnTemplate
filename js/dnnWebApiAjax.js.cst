@@ -1,0 +1,39 @@
+<%-- 
+Name: dnnWEbApiAjax.js.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="JS"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. (eg - {CompanyName})" %>
+
+<%--Begin File Generation Code --%>
+(function ($) {
+    <%= OwnerFolder %>.extend(<%= OwnerFolder %>, {
+        DnnWebApiAjax: {
+            post: function (sf, urlObject, doneCallback, failCallback) {
+                <%= OwnerFolder %>.DnnWebApiAjax.ajax("POST", sf, urlObject, doneCallback, failCallback);
+            },
+            get: function (sf, urlObject, doneCallback, failCallback) {
+                <%= OwnerFolder %>.DnnWebApiAjax.ajax("GET", sf, urlObject, doneCallback, failCallback);
+            },
+            ajax: function (postType, sf, urlObject, doneCallback, failCallback) {
+                $.ajax({
+                    type: postType,
+                    url: sf.getServiceRoot(urlObject.module) + urlObject.controller + '/' + urlObject.action,
+                    beforeSend: sf.setModuleHeaders,
+                    data: urlObject.data || {}
+                }).done(function (data) {
+                    doneCallback(data);
+                }).fail(function (xhr, result, status) {
+                    if ($.isFunction(failCallback)) {
+                        failCallback(status, xhr, result);
+                    }
+                });
+            }
+        }
+    });
+})(jQuery);

@@ -1,0 +1,88 @@
+<%-- 
+Name: WebLogging.Tests.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+
+<%--Begin File Generation Code --%>
+using System;
+using System.Text.RegularExpressions;
+using System.Web;
+using DotNetNuke.Tests.UI.WatiN.Common;
+using DotNetNuke.Tests.UI.WatiN.Common.WatiNObjects;
+using Moq;
+using MbUnit.Framework;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Model;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Presenter;
+using WatiN.Core;
+
+
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>
+{
+    /// <summary>
+    /// Summary description for AddContPresenterTests
+    /// </summary>
+    [TestFixture]
+    public class WebLogFileTest : WebTestBase
+    {
+        #region [Setup / TearDown]
+
+        [FixtureSetUp]
+        public void FixtureSetUp()
+        {
+        }
+
+        /// <summary>
+        /// Initialization for each test.
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+        }
+
+        /// <summary>
+        /// Clean up after each test.
+        /// </summary>
+        [TearDown]
+        public void TearDown()
+        {
+        }
+
+        /// <summary>
+        /// Called after all tests in this class are executed.
+        /// </summary>
+        [FixtureTearDown]
+        public void FixtureCleanup()
+        {
+            //TearDownTest();
+        }
+
+        #endregion
+
+        #region Tests
+        [Test]
+        public void LogFileExists()
+        {
+            //Check if the file exists
+        }
+
+        [Test]
+        public void LogFileDataOutputCorrectly()
+        {
+            //Get logging file
+
+            //Read line
+
+            //Verify with regex
+        }
+        #endregion
+    }
+
+
+}

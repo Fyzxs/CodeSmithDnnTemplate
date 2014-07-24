@@ -1,0 +1,44 @@
+<%-- 
+Name: I$AdditionalControl$View.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../../MasterCodeBehind.cs"  %>
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControl" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="The control that this is being generated for." %>
+<%-- 01.3) Module Interfaces --%>
+<%@ Property Name="IActionable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the View control implementats of IActionable." %>
+<%@ Property Name="IModuleListener" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the View control implementats of IModuleListener." %>
+<%@ Property Name="IModuleCommunicator" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the View control implementats of IModuleCommunicator." %>
+
+<%--Begin File Generation Code --%>
+using System;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Model;
+using DotNetNuke.Web.Mvp;
+<% if(AdditionalControl == MasterCodeBehind.ViewControl) { %><% if(IActionable){ %>using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Modules.Actions;<% } %>
+<% if(AdditionalControl == MasterCodeBehind.ViewControl && (IModuleListener || IModuleCommunicator)) { %>using DotNetNuke.Entities.Modules.Communications; <% } %><% } %>
+
+namespace  <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views
+{
+    public interface I<%= AdditionalControl %>View: IModuleView<<%= AdditionalControl %>Model><% if(AdditionalControl == MasterCodeBehind.ViewControl) { %><% if(IActionable){ %>, IActionable<% } if(IModuleListener){ %>, IModuleListener<% } if(IModuleCommunicator){ %>, IModuleCommunicator<% } %><% } %>
+    {
+        event EventHandler<<%= AdditionalControl %>EventNameEventArgs> <%= AdditionalControl %>EventName;
+        <% if(AdditionalControl != MasterCodeBehind.ViewControl) { %>event EventHandler<EventArgs> GoBack;<% } %>
+    }
+
+    public class <%= AdditionalControl %>EventNameEventArgs : EventArgs
+    {
+        public string SomeKindaMessage { get; private set; }
+
+        public <%= AdditionalControl %>EventNameEventArgs(){}
+
+        public <%= AdditionalControl %>EventNameEventArgs(string someKindaMessage) : this()
+        {
+            SomeKindaMessage = someKindaMessage;
+        }
+    }
+}

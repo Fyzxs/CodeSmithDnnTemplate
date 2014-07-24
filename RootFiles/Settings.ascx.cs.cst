@@ -1,0 +1,201 @@
+<%-- 
+Name: Settings.ascx.cs.cst
+Author: Quinn Gil
+Description:
+--%>
+<%@ CodeTemplate Language="C#" src="../MasterCodeBehind.cs" TargetLanguage="C#" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="DotNetNukeDirectory" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="DotNetNuke website directory to host module testing. This will also be the DNN.DLL Referenced by the project." Editor="System.Windows.Forms.Design.FolderNameEditor" %>
+
+<%-- 05) ASP.NET --%>
+<%@ Property Name="netVersion" Type="MasterCodeBehind.dotNet.Version" Optional="False" Category="05) ASP.NET" Description="Version of .NET to set the module to." %>
+
+<%-- 06) Additional DLLs --%>
+<%@ Property Name="AdditionalDllsIncludedInZip" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will be included in the zip file." %>
+<%@ Property Name="AdditionalDllsNotZipped" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will NOT be included in the zip file." %>
+
+<%-- 07) JavaScript & CSS --%>
+<%@ Property Name="IncludeTemplateAjaxWrapper" Type="System.Boolean" Optional="True" Default="False" Category="07) JavaScript and CSS" Description="Adds some code designed to handle customized jQuery AJAX requests." %>
+
+<%-- 08) Data Access Layer --%>
+<%@ Property Name="DataAccessLayerProvider" Type="MasterCodeBehind.DataAccessLayer.Types" Optional="True" Default="None" Category="08) Data Access Layer" Description="Type of Data Access Layer to include in the template." %>
+<%-- 08.netTiers) Data Access Layer --%>
+<%@ Property Name="netTiersLocation" Type="System.String" Optional="True" Category="08.netTiers) Data Access Layer" Editor="System.Windows.Forms.Design.FolderNameEditor" Description="Location of the root folder for the netTiers solution. The root folder needs to be the same name as the root namespace of the netTiers project." %>
+
+<%-- 09) Logging --%>
+<%@ Property Name="LoggingProvider" Type="MasterCodeBehind.Logging.Types" Optional="True" Default="None" Category="08) Logging" Description="Type of Logging to include in the template." %>
+
+<%--Begin File Generation Code --%>
+using System;
+using System.Web.UI;
+<% if(!String.IsNullOrEmpty(AdditionalDllsIncludedInZip)) { foreach(string s in AdditionalDllsIncludedInZip.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+<% if(System.IO.File.Exists(s)) { %>using <%= System.IO.Path.GetFileNameWithoutExtension(s) %>;<% } else { %>using <%= System.IO.Path.GetFileNameWithoutExtension(DotNetNukeDirectory + @"\bin\" + s) %>;<% } %>
+<% } } %>
+<% if(!String.IsNullOrEmpty(AdditionalDllsNotZipped)) { foreach(string s in AdditionalDllsNotZipped.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)){ %>
+<% if(System.IO.File.Exists(s)) { %>using <%= System.IO.Path.GetFileNameWithoutExtension(s) %>;<% } else { %>using <%= System.IO.Path.GetFileNameWithoutExtension(DotNetNukeDirectory + @"\bin\" + s) %>;<% } %>
+<% } } %>
+using DotNetNuke.Entities.Modules;
+<%  string dalLocation = String.Empty;
+    switch(DataAccessLayerProvider)
+    {
+        case MasterCodeBehind.DataAccessLayer.Types.netTiers:
+            dalLocation = netTiersLocation;
+        break;
+        default:
+            //Do Nothing
+            break;
+    }
+    if(!String.IsNullOrEmpty(dalLocation)){ %>
+<%= MasterCodeBehind.DataAccessLayer.Usings(DataAccessLayerProvider, dalLocation) %> <% } %>
+
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>
+{
+    public partial class Settings : ModuleSettingsBase
+    {
+        private ModuleInfo Module { get; set; }
+        
+        #region Event Handlers
+        /// <summary>
+        /// Loads the settings.
+        /// </summary>
+        public override void LoadSettings()
+        {
+            Module = new ModuleInfo(ModuleContext);
+            
+            <%= MasterCodeBehind.Logging.InitializeLoggingCall(LoggingProvider, netVersion) %>
+            <%= MasterCodeBehind.Logging.LogDebug(LoggingProvider, netVersion, @"""Logging Enabled""") %>
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+            
+            <%= MasterCodeBehind.Logging.LogDebug(LoggingProvider, netVersion, @"""Requesting jQuery Registration from DotNetNuke""") %>
+            DotNetNuke.Framework.jQuery.RequestRegistration();
+            
+            <%= MasterCodeBehind.Logging.LogDebug(LoggingProvider, netVersion, @"""Registering the javascript file Framework""") %>
+            ScriptManager.RegisterClientScriptInclude(Page, Page.GetType(), Page.ID + "Framework", ResolveUrl("js/Framework.js"));
+            <%= MasterCodeBehind.Logging.LogDebug(LoggingProvider, netVersion, @"""Registering the javascript file " + CodeSafeModuleName + @")""") %>
+            ScriptManager.RegisterClientScriptInclude(Page, Page.GetType(), Page.ID + "<%= CodeSafeModuleName %>", ResolveUrl("js/<%= CodeSafeModuleName %>.js"));
+            <%= MasterCodeBehind.Logging.LogDebug(LoggingProvider, netVersion, @"""Registering the javascript file Settings""") %>
+            ScriptManager.RegisterClientScriptInclude(Page, Page.GetType(), Page.ID + "Framework", ResolveUrl("js/Settings.js"));
+
+            <%= MasterCodeBehind.Logging.LogInfo(LoggingProvider, netVersion, @"""Current Culture set to : "" + System.Threading.Thread.CurrentThread.CurrentUICulture") %>
+            <%= MasterCodeBehind.Logging.LogInfo(LoggingProvider, netVersion, @"""Registering the javascript file Localized""") %>
+            ScriptManager.RegisterClientScriptInclude(Page, Page.GetType(), Page.ID + "Localized.js", ResolveUrl("js/" + Universal.GetLocalizedFileName(MapPath(ControlPath) + "/js/Localized.js")));
+
+            
+            if (!IsPostBack)
+            {
+                Page.MaintainScrollPositionOnPostBack = true;
+
+                GetSettings();
+            }
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>
+        }
+        #endregion
+
+        #region Public Methods
+        /// <summary>
+        /// handles updating the module settings for this control
+        /// </summary>
+        public override void UpdateSettings()
+        {
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+            SaveSettings();
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>
+        }
+        #endregion
+
+        #region Private/Protected Methods
+
+        #region General Function
+
+        #endregion
+
+        #region Get
+        private void GetSettings()
+        {
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+            DisplayTabModuleTemplate(GetSetting(TabModuleSetting.TabModuleTemplate));
+
+            DisplayModuleTemplate(GetSetting(ModuleSetting.ModuleTemplate));
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>
+        }
+
+        private object GetSetting(string settingName)
+        {
+            return Settings[settingName];
+        }
+        #endregion
+
+        #region Display
+        
+        #region Module Settings
+        private void DisplayModuleTemplate(object setting)
+        {
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+            string settingValue = ( setting ?? String.Empty ).ToString();
+            txtModuleTemplate.Text = settingValue;
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>
+        }
+        #endregion
+
+        #region Tab Module Settings
+
+        private void DisplayTabModuleTemplate(object setting)
+        {
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+            string settingValue = ( setting ?? String.Empty ).ToString();
+            txtModuleTemplate.Text = settingValue;
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>
+        }
+        #endregion
+
+        #endregion
+
+        #region Save
+        private void SaveSettings()
+        {
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+            SaveTabModuleSetting(TabModuleSetting.TabModuleTemplate, AcquireTabModuleTemplate());
+            SaveModuleSetting(ModuleSetting.ModuleTemplate, AcquireModuleTemplate());
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>
+        }
+
+        private void SaveTabModuleSetting(string settingName, string setting)
+        {
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+            _controller.UpdateTabModuleSetting(TabModuleId, settingName, setting);
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>
+        }
+
+        private void SaveModuleSetting(string settingName, string setting)
+        {
+            <%= MasterCodeBehind.Logging.DebugEnter(LoggingProvider, netVersion) %>
+             _controller.UpdateModuleSetting(TabModuleId, settingName, setting);
+            <%= MasterCodeBehind.Logging.DebugExit(LoggingProvider, netVersion) %>;
+        }
+
+        #endregion
+
+        #region Acquire
+        private string AcquireTabModuleTemplate()
+        {
+            return txtTabModuleTemplate.Text;
+        }
+
+        private string AcquireModuleTemplate()
+        {
+            return txtModuleTemplate.Text;
+        }
+        #endregion
+
+        #region Clear
+
+        #endregion
+
+        #endregion
+    }
+}

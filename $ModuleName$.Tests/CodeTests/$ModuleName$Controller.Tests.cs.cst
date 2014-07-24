@@ -1,0 +1,48 @@
+<%-- 
+Name: $ModuleName#Controller.Tests.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%--Begin File Generation Code --%>
+using System;
+using System.Web;
+using DotNetNuke.Entities.Modules;
+using Moq;
+using MbUnit.Framework;
+using Name.Space.TestProj;
+
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>
+{
+    [TestFixture]
+    public class <%= CodeSafeModuleName %>ControllerTests
+    {
+
+        [Test]
+        public void UpgradeModule_NonListed_Version()
+        {
+            //Arrange
+            var testProj = new Mock<%= CodeSafeModuleName %>Controller>();
+
+            //Act
+
+            //Assert
+            Assert.IsEmpty(testProj.Object.UpgradeModule(String.Empty));
+        }
+        [Test]
+        public void UpgradeModule_Listed_Version()
+        {
+            //Arrange
+            var testProj = new Mock<%= CodeSafeModuleName %>Controller>();
+            
+            //Act
+
+            //Assert
+            Assert.AreEqual("The 'case' should be in the ##.##.## format.", testProj.Object.UpgradeModule("Fake Version"));
+        }
+    }
+}

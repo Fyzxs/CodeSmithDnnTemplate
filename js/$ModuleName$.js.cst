@@ -1,0 +1,29 @@
+<%-- 
+Name: $ModuleName$.js.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="JS"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. (eg - {CompanyName})" %>
+
+<%--Begin File Generation Code --%>
+(function($) {
+    <%= OwnerFolder %>.extend(true, { <%= CodeSafeModuleName %>: {
+		validation: {
+		},
+		init: function() {
+			setTimeout(<%= OwnerFolder %>.<%= CodeSafeModuleName %>.init_delayed, 500);
+		},
+		init_delayed:function(){
+		},
+		unload: function() {
+		}	
+    }});
+
+    <%= OwnerFolder %>.extend(<%= OwnerFolder %>.<%= CodeSafeModuleName %>, { Localized : {
+    }});
+})(jQuery);

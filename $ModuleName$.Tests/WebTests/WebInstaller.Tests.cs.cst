@@ -1,0 +1,117 @@
+<%-- 
+Name: WebInstaller.Tests.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+
+<%--Begin File Generation Code --%>
+using System;
+using System.Text.RegularExpressions;
+using System.Web;
+using DotNetNuke.Tests.UI.WatiN.Common;
+using DotNetNuke.Tests.UI.WatiN.Common.WatiNObjects;
+using Moq;
+using MbUnit.Framework;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Model;
+using <%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.Presenter;
+using WatiN.Core;
+
+
+namespace TestProj.Tests
+{
+    /// <summary>
+    /// Summary description for AddContPresenterTests
+    /// </summary>
+    [TestFixture]
+    public class WebInstallTests : WebTestBase
+    {
+        #region [Setup / TearDown]
+
+        [FixtureSetUp]
+        public void FixtureSetUp()
+        {
+            SetUpTest();
+
+            LoginPage loginPage = new LoginPage(baseWatinObject);
+            loginPage.LoginUser(TestUsers.Host.UserName, TestUsers.Host.Password);
+        }
+
+        /// <summary>
+        /// Initialization for each test.
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+        }
+
+        /// <summary>
+        /// Clean up after each test.
+        /// </summary>
+        [TearDown]
+        public void TearDown()
+        {
+        }
+
+        /// <summary>
+        /// Called after all tests in this class are executed.
+        /// </summary>
+        [FixtureTearDown]
+        public void FixtureCleanup()
+        {
+            //TearDownTest();
+        }
+
+        #endregion
+
+        #region Tests
+        [Test]
+        public void InstallModule()
+        {
+            //Arrange
+            ieInstance.GoTo(SiteURL + "/tabid/18/ctl/EditModuleDefinition/mid/348/Type/Module/portalid/0/Default.aspx");
+            System.Threading.Thread.Sleep(500);
+            var select = ieInstance.SelectList(Find.ById(s => s.EndsWith("cboCreate")));
+            select.Select("Manifest");
+            System.Threading.Thread.Sleep(500);
+            select = ieInstance.SelectList(Find.ById(s => s.EndsWith("cboOwner")));
+            select.Select(<%= RootNamespace %>.<%= CodeSafeModuleName %>.Definition.OwnerFolder);
+            select = ieInstance.SelectList(Find.ById(s => s.EndsWith("cboModule")));
+            select.Select(<%= RootNamespace %>.<%= CodeSafeModuleName %>.Definition.CodeSafeModuleName);
+            var check = ieInstance.CheckBox(Find.ById(s => s.EndsWith("chkAddPage")));
+            check.Checked = true;
+
+            //Act
+            var link = ieInstance.Link(Find.ByTitle("Create Module"));
+            link.Click();
+            System.Threading.Thread.Sleep(500);
+
+            //Assert
+            var sFailure = ieInstance.FindText(new Regex("Installation Failed"));
+            Assert.AreEqual(String.Empty, sFailure);
+        }
+
+        [Test]
+        [DependsOn("InstallModule")]
+        public void ModuleLoads()
+        {
+            //Arrange
+            var image = ieInstance.Image(Find.ByTitle(s => s.EndsWith("Error")));
+
+            //Act
+            //No Act - Seperated from InstallModule to have only 1 Assert per Test
+
+            //Assert
+            Assert.IsNull(image, "The module did not load properly on the Test Page.");
+        }
+
+        #endregion
+    }
+
+
+}

@@ -1,0 +1,52 @@
+<%-- 
+Name: $AdditionalControl$.ascx.designer.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="ASP" src="../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControl" Type="System.String" Optional="False" Category="01.1) Module Controls" Description="The control that this is being generated for." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. (eg - {CompanyName})" %>
+
+<%-- 02.1) DotNetNuke/Telerik --%>
+<%@ Property Name="HaveTelerikDeveloperLicense" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Uses Telerik controls where possible. UseDnnTelerikControls will override this and place DNN Wrapped controls when possible." %>
+<%@ Property Name="UseDnnTelerikControls" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Where possible, will use the DNN wrappers for Telerik Controls" %>
+
+<%--Begin File Generation Code --%>
+<%%@ Control Language="C#" AutoEventWireup="true" CodeBehind="<%= AdditionalControl %>.ascx.cs" Inherits="<%= RootNamespace %>.<%= CodeSafeModuleName %>.Views.<%= AdditionalControl %>" %>
+<% if(HaveTelerikDeveloperLicense) { %><%%@ Register assembly="Telerik.Web.UI" namespace="Telerik.Web.UI" tagprefix="telerik" %><% } %>
+
+<% if(HaveTelerikDeveloperLicense) { %><telerik:RadScriptBlock ID="RadScriptBlockMain" runat="server"><% } %>
+    <link rel="stylesheet" type="text/css" href="<%%= ResolveUrl("css/<%= CodeSafeModuleName %>.css")%>" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // ASP.NET JavaScript Control Registration
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.elements = {
+                sf: $.ServicesFramework(<%%=ModuleId %>)
+            };
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.WebApiControllers = {
+                <%--This should loop over Controller names--%>
+                <%= CodeSafeModuleName %>: {
+                    Name: "<%= CodeSafeModuleName %>",
+                    Sample: "Sample"
+                }
+            };
+                    
+            <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.init();
+        });
+    </script>
+<% if(HaveTelerikDeveloperLicense) { %></telerik:RadScriptBlock><% } %>
+<% if(AdditionalControl != MasterCodeBehind.ViewControl) { %><asp:HyperLink ID="lnkGoBackImage" runat="server" ImageUrl="~/images/lt.gif"  NavigateUrl='<%%# DotNetNuke.Common.Globals.NavigateURL(ModuleContext.TabId) %>'></asp:HyperLink>
+<asp:LinkButton ID="lnkGoBack" runat="server" onclick="lnkGoBack_Click" resourceKey="lnkGoBack" ></asp:LinkButton><% } %>
+<div runat="server" ID="divValidation">
+    <asp:Label CssClass="hidden" ID="lblErrMsgs" runat="server" Text='Default_Text'></asp:Label> 
+    <%-- Removing MVC
+    <asp:Label CssClass="hidden" ID="lblErrMsgs" runat="server" Text='<%%# Model.SomeKindaMessage %>'></asp:Label> 
+    --%>
+</div>

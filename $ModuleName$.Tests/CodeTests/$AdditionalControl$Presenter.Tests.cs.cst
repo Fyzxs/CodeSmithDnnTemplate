@@ -1,0 +1,141 @@
+<%-- 
+Name: $AdditionalControl#Presenter.Tests.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControl" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="The control that this is being generated for." %>
+
+<%--Begin File Generation Code --%>
+using System;
+using System.Web;
+using Moq;
+using MbUnit.Framework;
+using Name.Space.TestProj.Views;
+using Name.Space.TestProj.Views.Model;
+using Name.Space.TestProj.Views.Presenter;
+
+
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>
+{
+    /// <summary>
+    /// Summary description for <%= AdditionalControl %>PresenterTests
+    /// </summary>
+    [TestFixture]
+    public class <%= AdditionalControl %>PresenterTests
+    {
+        /// <summary>
+        /// Constants used in the Tests
+        /// </summary>
+        private struct Constants
+        {
+            public const int ModuleValidId = 10;
+            public const int TabValidId = 12;
+
+        }
+
+        #region [Setup / TearDown]
+
+        /// <summary>
+        /// Initialization for each test.
+        /// </summary>
+        [SetUp]
+        public void MyTestInitialize()
+        {
+            //
+            // Place any additional initialization here
+            //
+        }
+
+        /// <summary>
+        /// Clean up after each test.
+        /// </summary>
+        [TearDown]
+        public void MyTestCleanUp()
+        {
+            //
+            // Place any additional cleanup here
+            //
+        }
+
+        /// <summary>
+        /// Called after all tests in this class are executed.
+        /// </summary>
+        [FixtureTearDown]
+        public void FixtureCleanup()
+        {
+        }
+
+        #endregion
+
+        [Test]
+        public void <%= AdditionalControl %>Presenter_Remove_<%= AdditionalControl %>EventName_On_Release()
+        {
+            // Arrange
+            var view = new Mock<I<%= AdditionalControl %>View>();
+            view.Setup(v => v.Model).Returns(new <%= AdditionalControl %>Model());
+
+            var presenter = new <%= AdditionalControl %>Presenter(view.Object);
+
+            // Act
+            presenter.ReleaseView();
+
+            const string errMsg = "This is an Error Message";
+            view.Raise(v => v.<%= AdditionalControl %>EventName += null, new object[] { null, new <%= AdditionalControl %>EventNameEventArgs(errMsg) });
+
+            //Assert
+            Assert.IsNull(view.Object.Model.SomeKindaMessage);
+        }
+
+        [Test]
+        public void <%= AdditionalControl %>Presenter_Remove_GoBack_On_Release()
+        {
+            // Arrange
+            var view = new Mock<I<%= AdditionalControl %>View>();
+            view.Setup(v => v.Model).Returns(new <%= AdditionalControl %>Model());
+
+            var httpContext = new Mock<HttpContextBase>();
+            var httpResponse = new Mock<HttpResponseBase>();
+            httpContext.Setup(h => h.Response).Returns(httpResponse.Object);
+
+            object o = httpContext.Object;
+
+            var presenter = new <%= AdditionalControl %>Presenter(view.Object)
+            {
+
+                HttpContext = httpContext.Object,
+                ModuleId = Constants.ModuleValidId,
+                TabId = Constants.TabValidId
+            };
+
+            // Act
+            presenter.ReleaseView();
+            view.Raise(v => v.GoBack += null, new object[] { httpResponse.Object, EventArgs.Empty });
+
+            // Assert
+            httpResponse.Verify(r => r.Redirect(DotNetNuke.Common.Globals.NavigateURL(Constants.TabValidId)), Times.Never());
+        }
+
+        [Test]
+        public void View_<%= AdditionalControl %>tEventName_MessageSet()
+        {
+            // Arrange
+            var view = new Mock<I<%= AdditionalControl %>View>();
+            view.Setup(v => v.Model).Returns(new <%= AdditionalControl %>Model());
+
+            var presenter = new <%= AdditionalControl %>Presenter(view.Object);
+
+            // Act
+            const string errMsg = "This is an Error Message";
+            view.Raise(v => v.<%= AdditionalControl %>EventName += null, new object[] { null, new <%= AdditionalControl %>EventNameEventArgs(errMsg) });
+
+            //Assert
+            Assert.AreEqual(errMsg, view.Object.Model.SomeKindaMessage);
+        }
+    }
+}

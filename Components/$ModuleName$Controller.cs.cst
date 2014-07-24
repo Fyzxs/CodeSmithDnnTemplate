@@ -1,0 +1,74 @@
+<%-- 
+Name: $ModuleName$Controller.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#"  %>
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.3) Module Interfaces --%>
+<%@ Property Name="IUpgradeable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implements of IUpgradeable." %>
+<%@ Property Name="IPortable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implementats of IPortable." %>
+<%@ Property Name="ISearchable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implementats of ISearchable." %>
+<%-- 02.2) DotNetNuke Manifest --%>
+<%@ Property Name="ManifestUpgradeVersionList" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+
+<%--Begin File Generation Code --%>
+using System;
+<% if(IUpgradeable || IPortable || ISearchable) {%>using DotNetNuke.Entities.Modules;<% } %>
+<% if(ISearchable) { %>using DotNetNuke.Services.Search;<% } %>
+
+namespace <%= RootNamespace %>.<%= CodeSafeModuleName %>
+{    
+    public class <%= CodeSafeModuleName %>Controller: I<%= CodeSafeModuleName %>Controller<% if(IUpgradeable){ %>,IUpgradeable<% } %><% if(IPortable){ %>,IPortable<% } %><% if(ISearchable){ %>,ISearchable<% } %>
+    {
+        #region Implementation of I<%= CodeSafeModuleName %>Controller
+
+        #endregion
+        
+        <% if(IUpgradeable || IPortable || ISearchable){ %>
+        #region Optional Interfaces
+        <% if(IUpgradeable){ %>#region IUpgradeable Members
+        public string UpgradeModule(string version)
+        {
+            var message = String.Empty;
+            
+            switch(version)
+            {
+<% if(!String.IsNullOrEmpty(ManifestUpgradeVersionList)) { foreach(string s in ManifestUpgradeVersionList.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries)) { %>
+                case "<%= s %>":
+                    //Enter Upgrade Steps for DNN version <%= s %>
+                    break;
+<% } } %>
+                case "Fake Version":
+                    message = "The 'case' should be in the ##.##.## format.";
+                    break;
+                default:
+                    break;
+            }
+            return message;
+        }
+        #endregion<% } %>
+
+        <% if(IPortable){ %>#region IPortable Members
+        public string ExportModule(int moduleId)
+        {
+            throw new NotImplementedException();
+        }
+        public void ImportModule(int moduleId, string content, string version, int userId)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion<% } %>
+
+        <% if(ISearchable){ %>#region ISearchable Members
+        public SearchItemInfoCollection GetSearchItems(DotNetNuke.Entities.Modules.ModuleInfo modInfo)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion<% } %>
+        #endregion
+        <% } %>
+    }
+}

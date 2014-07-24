@@ -1,0 +1,24 @@
+<%-- 
+Name: WebTestBase.cs.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="C#" src="../../MasterCodeBehind.cs" %>
+
+<%-- 01) Module --%>
+<%@ Property Name="ModuleName" Type="System.String" Optional="False" Category="01) Module" Description="The Name of the Module" %>
+
+<%-- 03) AssemblyInfo.cs --%>
+<%@ Property Name="AssemblyInfoTitle" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoDescription" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoCompany" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoProduct" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+<%@ Property Name="AssemblyInfoTrademark" Type="System.String" Optional="True" Category="03) AssemblyInfo" Description="" %>
+
+<%--Begin File Generation Code --%>
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyTitle("<%= AssemblyInfoTitle %> - <%= ModuleName %>.Tests")]
+[assembly: AssemblyProduct("<%= ModuleName %>.Tests")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

@@ -1,0 +1,272 @@
+<%-- 
+Name: $ModuleName$.dnn.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="XML" src="../MasterCodeBehind.cs" Debug="True"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="ModuleName" Type="System.String" Optional="False" Category="01) Module" Description="The Name of the Module" %>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+<%@ Property Name="RootNamespace" Type="System.String" Optional="False" Category="01) Module" Description="The namespace the module belongs in. (eg - {CompanyName}.Modules). The name of the module will be appended." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="HasSettingControl" Type="System.Boolean" Optional="True" Default="True" Category="01.1) Module Controls" Description="Will include the Settings.ascx files." %>
+<%@ Property Name="AdditionalControls" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="Semi-Colon seperated list of the Names {no whitespace} of the controls. eg - Edit;AddNew;AdminEdit" %>
+<%-- 01.2) Module Permissions --%>
+<%@ Property Name="HasDnnExtendPermissions" Type="System.Boolean" Optional="True" Default="False" Category="01.2) Module Permissions" Description="DNN Profession+ and Oliver Hine's Extended Persmission have these active." %>
+<%@ Property Name="AdditionalPermissions" Type="System.String" Optional="True" Category="01.2) Module Permissions" Description="Semi-Colon seperated list of the Names {no whitespace} of the Permissions. eg - AddNew;AdminEdit" %>
+<%-- 01.3) Module Interfaces --%>
+<%@ Property Name="IUpgradeable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implements of IUpgradeable." %>
+<%@ Property Name="IPortable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implementats of IPortable." %>
+<%@ Property Name="ISearchable" Type="System.Boolean" Optional="True" Default="False" Category="01.3) Module Interfaces" Description="If the BusinessController implementats of ISearchable." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="DotNetNukeDirectory" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="DotNetNuke website directory to host module testing. This will also be the DNN.DLL Referenced by the project." Editor="System.Windows.Forms.Design.FolderNameEditor" %>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. (eg - {CompanyName})" %>
+
+<%-- 02.1) DotNetNuke/Telerik --%>
+<%@ Property Name="HaveTelerikDeveloperLicense" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Uses Telerik controls where possible. UseDnnTelerikControls will override this and place DNN Wrapped controls when possible." %>
+<%@ Property Name="UseDnnTelerikControls" Type="System.Boolean" Optional="True" Default="False" Category="02.1) DotNetNuke/Telerik" Description="Where possible, will use the DNN wrappers for Telerik Controls" %>
+<%-- 02.2) DotNetNuke Manifest --%>
+<%@ Property Name="ManifestPackageName" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestFriendlyName" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestDescription" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerName" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerOrganization" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerUrl" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestOwnerEmail" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestIncludeReleaseNotesFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestIncludeLicenseFile" Type="System.Boolean" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+<%@ Property Name="ManifestUpgradeVersionList" Type="System.String" Optional="True" Category="02.2) DotNetNuke Manifest" Description="" %>
+
+<%-- 06) Additional DLLs --%>
+<%@ Property Name="AdditionalDllsIncludedInZip" Type="System.String" Optional="True" Category="06) Additional DLLs" Description="Semi-Colon seperated list of locations for Additional DLLs to be included in the reference. Non-Pathed DLLs are assumed to be in /bin of the DotnetnukeDirectory. These will be included in the zip file." %>
+
+<%-- 07) JavaScript & CSS --%>
+<%@ Property Name="AdditionalJavascriptFiles" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Additional JS files to be uploaded with the module" %>
+<%@ Property Name="AdditionalCssFiles" Type="System.String" Optional="True" Category="07) JavaScript and CSS" Description="Additional CSS files to be uploaded with the module" %>
+
+<%-- 09) Logging --%>
+<%@ Property Name="LoggingProvider" Type="MasterCodeBehind.Logging.Types" Optional="True" Default="None" Category="09) Logging" Description="Type of Logging to include in the template." %>
+
+<%--Begin File Generation Code --%>
+<dotnetnuke type="Package" version="5.0">
+  <packages>
+    <package name="<% if(String.IsNullOrEmpty(ManifestPackageName)) { %><%= OwnerFolder %> <%= ModuleName %><% } else { %><%= ManifestPackageName %><% } %>" type="Module" version="00.00.00">
+      <friendlyName><%= OwnerFolder %>.<% if(String.IsNullOrEmpty(ManifestFriendlyName)) { %><%= ModuleName %><% } else { %><%= ManifestFriendlyName %><% } %></friendlyName>
+      <description><%= ManifestDescription %></description>
+      <dependencies />
+      <owner>
+        <name><%= ManifestOwnerName %></name>
+        <organization><%= ManifestOwnerOrganization %></organization>
+        <url><%= ManifestOwnerUrl %></url>
+        <email><%= ManifestOwnerEmail %></email>
+      </owner>
+      <releaseNotes<% if(ManifestIncludeReleaseNotesFile) { %> src="releaseNotes.txt" <% } %> />
+      <licence<% if(ManifestIncludeReleaseNotesFile) { %> src="licence.txt" <% } %> />
+      <components>
+        <component type="Module">
+          <desktopModule>
+            <moduleName><%= ModuleName %></moduleName>
+            <foldername><%= OwnerFolder %>/<%= CodeSafeModuleName %></foldername>
+            <%-- business controller disabled for now --%>
+            <%-- <businessControllerClass><%= RootNamespace %>.<%= CodeSafeModuleName %>.<%= CodeSafeModuleName %>Controller</businessControllerClass> --%>
+            <% if(IPortable || ISearchable || IUpgradeable){ %>
+            <supportedFeatures>
+              <% if(IPortable) { %><supportedFeature type="Portable" /><% } %>
+              <% if(ISearchable) { %><supportedFeature type="Searchable" /><% } %>
+              <% if(IUpgradeable) { %><supportedFeature type="Upgradeable" /><% } %>
+            </supportedFeatures>
+            <% } %>
+			<moduleDefinitions>
+              <moduleDefinition>
+                <friendlyName><% if(String.IsNullOrEmpty(ManifestFriendlyName)) { %><%= ModuleName %><% } else { %><%= ManifestFriendlyName %><% } %></friendlyName>
+                <defaultCacheTime>-1</defaultCacheTime>
+                <moduleControls>
+                  <moduleControl>
+                    <controlKey />
+                    <controlSrc>DesktopModules/<%= OwnerFolder %>/<%= CodeSafeModuleName %>/<%= MasterCodeBehind.ViewControl %>.ascx</controlSrc>
+                    <supportsPartialRendering>True</supportsPartialRendering>
+                    <controlTitle />
+                    <controlType>View</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                  </moduleControl>
+<% if(!String.IsNullOrEmpty(AdditionalControls)) { foreach(string s in AdditionalControls.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+                  <moduleControl>
+                    <controlKey><%= s %></controlKey>
+                    <controlSrc>DesktopModules/<%= OwnerFolder %>/<%= CodeSafeModuleName %>/<%= s %>.ascx</controlSrc>
+                    <supportsPartialRendering>True</supportsPartialRendering>
+                    <controlTitle><%= s %></controlTitle>
+                    <controlType>Edit</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                  </moduleControl>
+<% } } %>
+<% if(HasSettingControl) { %>
+                  <moduleControl>
+                    <controlKey>Settings</controlKey>
+                    <controlSrc>DesktopModules/<%= OwnerFolder %>/<%= CodeSafeModuleName %>/Settings.ascx</controlSrc>
+                    <supportsPartialRendering>True</supportsPartialRendering>
+                    <controlTitle>Settings</controlTitle>
+                    <controlType>Admin</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                  </moduleControl>
+<% } %>
+                </moduleControls>
+                <permissions>
+<% if(!String.IsNullOrEmpty(AdditionalPermissions)) { foreach(string s in (AdditionalPermissions).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+                  <permission code="<%= s.ToUpper() %>" key="<%= s.ToUpper() %>" name="<%= Utils.SplitCamelCase(s) %>" />
+<% } } %>
+                </permissions>
+              </moduleDefinition>
+            </moduleDefinitions>
+          </desktopModule>
+<% if(IUpgradeable) { %>
+          <eventMessage>
+            <processorType>DotNetNuke.Entities.Modules.EventMessageProcessor, DotNetNuke</processorType>
+            <processorCommand>UpgradeModule</processorCommand>
+            <attributes>
+              <businessControllerClass><%= RootNamespace %>.<%= CodeSafeModuleName %>.<%= CodeSafeModuleName %>Controller</businessControllerClass>
+              <desktopModuleID>[DESKTOPMODULEID]</desktopModuleID>
+              <upgradeVersionsList><%= ManifestUpgradeVersionList %></upgradeVersionsList>
+            </attributes>
+          </eventMessage>
+<% } %>
+        </component>
+        <component type="File">
+          <!-- Ascx Files -->
+          <files>
+            <basePath>DesktopModules\<%= OwnerFolder %>\<%= CodeSafeModuleName %></basePath>
+<% if(HasSettingControl) { %>
+            <file>
+              <name>Settings.ascx</name>
+            </file>
+<% } %>
+<% foreach(string s in (AdditionalControls + ";" + MasterCodeBehind.ViewControl ).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <file>
+              <name><%= s %>.ascx</name>
+            </file>
+<% } %>
+          </files>
+        </component>
+        <component type="File">
+          <!-- Ascx.Resx Files -->
+          <files>
+            <basePath>DesktopModules\<%= OwnerFolder %>\<%= CodeSafeModuleName %>\App_LocalResources</basePath>
+<% if(HasSettingControl) { %>
+            <file>
+              <name>Settings.ascx.resx</name>
+            </file>
+<% } %>
+<% foreach(string s in (AdditionalControls + ";" + MasterCodeBehind.ViewControl ).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <file>
+              <name><%= s %>.ascx.resx</name>
+            </file>
+<% } %>
+          </files>
+        </component>
+        <component type="File">
+          <!-- JavaScript Files -->
+          <files>
+            <basePath>DesktopModules\<%= OwnerFolder %>\<%= CodeSafeModuleName %>\js</basePath>
+            <file>
+              <name>dnnWebApiAjax.js</name>
+            </file>
+            <file>
+              <name>Framework.js</name>
+            </file>
+            <file>
+              <name><%= CodeSafeModuleName %>.js</name>
+            </file>
+<% if(HasSettingControl) { %>
+            <file>
+              <name>Settings.js</name>
+            </file>
+<% } %>
+<% foreach(string s in (AdditionalControls + ";" + MasterCodeBehind.ViewControl).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <file>
+              <name><%= s %>.js</name>
+            </file>
+<% foreach(string p in (AdditionalPermissions + MasterCodeBehind.DefaultPermissions + (HasDnnExtendPermissions ? MasterCodeBehind.ExtendedPermissions : String.Empty)).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <file>
+              <name><%= s %>Permission<%= p %>.js</name>
+            </file><% } %>
+<% } %>
+<% if(!String.IsNullOrEmpty(AdditionalJavascriptFiles)) { foreach(string s in AdditionalJavascriptFiles.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <file>
+              <name><% if(System.IO.File.Exists(s)) { %><%= System.IO.Path.GetFileName(s) %><% } else { %><%= s %><% } %></name>
+            </file>
+<% } } %>
+            <file>
+              <name>Localized.js</name>
+            </file>
+          </files>
+        </component>
+        <component type="File">
+          <!-- css Files -->
+          <files>
+            <basePath>DesktopModules\<%= OwnerFolder %>\<%= CodeSafeModuleName %>\css</basePath>
+            <file>
+              <name><%= CodeSafeModuleName %>.css</name>
+            </file>
+<% if(!String.IsNullOrEmpty(AdditionalCssFiles)) { foreach(string s in AdditionalCssFiles.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <file>
+              <name><% if(System.IO.File.Exists(s)) { %><%= System.IO.Path.GetFileName(s) %><% } else { %><%= s %><% } %></name>
+            </file>
+<% } } %>
+          </files>
+        </component>
+<!-- SQL Stuff        
+        <component type="Script">
+          <scripts>
+            <basePath>DesktopModules\<%= OwnerFolder %>\<%= CodeSafeModuleName %>\sql</basePath>
+            <script type="Install">
+              <name>00.00.00.sql</name>
+              <version>00.00.00</version>
+            </script>
+            <script type="UnInstall">
+              <name>Uninstall.sql</name>
+              <version>00.00.00</version>
+            </script>
+          </scripts>
+        </component>
+-->
+        <component type="Assembly">
+          <assemblies>
+            <assembly>
+              <path>bin</path>
+              <name><%= RootNamespace %>.<%= CodeSafeModuleName %>.dll</name>
+              <sourceFileName><%= RootNamespace %>.<%= CodeSafeModuleName %>.dll</sourceFileName>
+            </assembly>
+<% if(!String.IsNullOrEmpty(AdditionalDllsIncludedInZip)) { foreach(string s in (AdditionalDllsIncludedInZip).Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries)) { %>
+            <assembly>
+              <path>bin</path>
+              <name><%= System.IO.Path.GetFileName(s) %></name>
+              <sourceFileName><%= System.IO.Path.GetFileName(s) %></sourceFileName><% if(System.IO.File.Exists(s)) {%>
+              <version><%= System.Diagnostics.FileVersionInfo.GetVersionInfo(s).FileVersion %></version><% } else if(System.IO.File.Exists(DotNetNukeDirectory + @"\bin\" + s)) { %>
+              <version><%= System.Diagnostics.FileVersionInfo.GetVersionInfo(DotNetNukeDirectory + @"\bin\" + s).FileVersion %></version><% } %>
+            </assembly>
+<% } } %>
+          </assemblies>
+        </component>
+        <%= MasterCodeBehind.Logging.ManifestEntry(OwnerFolder, LoggingProvider) %>
+<!-- Clean Up
+        <component type="Cleanup" version="04.05.00" fileName="04.05.00.txt" />
+        <component type="Cleanup" version="05.04.00">
+          <files>
+            <file>
+              <path>bin</path>
+              <name>DotNetNuke.Professional.Provider.TelerikEditorProvider.dll</name>
+            </file>
+          </files>
+        </component>
+-->
+      </components>
+    </package>
+  </packages>
+</dotnetnuke>

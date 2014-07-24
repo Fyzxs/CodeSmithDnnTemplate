@@ -1,0 +1,41 @@
+<%-- 
+Name: $AdditionalControl.js.cst
+Author: Quinn Gil
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="JS"  %>
+
+<%-- 01) Module --%>
+<%@ Property Name="CodeSafeModuleName" Type="System.String" Optional="False" Category="01) Module" Description="A version of the module name that is safe to use in code, Alpha Only is safest." %>
+
+<%-- 01.1) Module Controls --%>
+<%@ Property Name="AdditionalControl" Type="System.String" Optional="True" Category="01.1) Module Controls" Description="The control that this is being generated for." %>
+
+<%-- 02) DotNetNuke --%>
+<%@ Property Name="OwnerFolder" Type="System.String" Optional="False" Category="02) DotNetNuke" Description="Folder under DesktopModules to place the module folder. (eg - {CompanyName})" %>
+
+<%--Begin File Generation Code --%>
+(function($) {
+    <%= OwnerFolder %>.extend(<%= OwnerFolder %>.<%= CodeSafeModuleName %>, { <%= AdditionalControl %> : {
+        ajax: function (action, doneCallback, failCallback, urlData, doPost) {
+            var sf = <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.elements.sf;
+            var module = "<%= CodeSafeModuleName %>";
+            var controller = <%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.WebApiControllers.<%= CodeSafeModuleName %>.Name;
+            var urlObject = { module: module, controller: controller, action: action, data: urlData };
+
+            if (doPost) {
+                <%= OwnerFolder %>.DnnWebApiAjax.post(sf, urlObject, doneCallback, failCallback);
+            } else {
+                <%= OwnerFolder %>.DnnWebApiAjax.get(sf, urlObject, doneCallback, failCallback);
+            }
+        },
+		validation: {
+		},
+		init: function() {
+			setTimeout(<%= OwnerFolder %>.<%= CodeSafeModuleName %>.<%= AdditionalControl %>.init_delayed, 500);
+		},
+        init_delayed: function () {
+		},
+		unload: function() {
+		}
+    }});
+})(jQuery);
